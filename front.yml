@@ -6,13 +6,6 @@ spring:
 #authserver: http://localhost:8001
 zzyprime: 91473769
 zzydhbase: 2
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:7001/eureka/
-  instance:
-    instance-id: front
-    prefer-ip-address: true   #访问路径显示为IP
 feign:
   hystrix:
     enabled: true
