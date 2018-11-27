@@ -1,0 +1,17 @@
+server:
+  port: 3344
+spring:
+  application:
+    name: configcenter
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/linuszhonggithub/zzyroot.git
+eureka:
+  client:
+    service-url:
+      defaultZone: http://192.168.0.69:7001/eureka/
+  instance:
+    instance-id: configcenter
+    prefer-ip-address: true   #访问路径显示为IP
