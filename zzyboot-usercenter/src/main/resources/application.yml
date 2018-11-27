@@ -1,0 +1,37 @@
+server:
+  port: 8001
+spring:
+  application:
+    name: zzyusercenter
+  datasource:
+    url: jdbc:mysql://localhost:3306/usercenter
+    username: root
+    password: Ns5R3IbQMdJopyQdM5kM5g==
+    driver-class-name: com.mysql.jdbc.Driver
+  jpa:
+    database: mysql
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  redis:
+    host: localhost
+    database: 0
+    port: 6379
+    jedis:
+      pool:
+        max-active: 3
+        max-wait: -1
+        max-idle: 8
+        min-idle: 0
+feign:
+  hystrix:
+    enabled: true  
+eureka:
+  client:
+    service-url:
+      defaultZone: http://192.168.0.69:7001/eureka/
+  instance:
+    instance-id: zzyusercenter
+    prefer-ip-address: true   #访问路径显示为IP
+super: Ns5R3IbQMdLLCeMRmd5OskUSp+GNeCa864oP6p0fSVfLj4hdhmtluD0NQI/X1DgPD8jR1vMGt/jgUTj2EzWHH9Kx9Pww+XN3w/pt4oS8oDc=
+superu: +cd0ErM6PdQMowQg2WlDnm4bfS8glZdTJ2p6/FLRUtXQmsCQBUBHWQ==
