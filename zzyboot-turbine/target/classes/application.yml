@@ -1,0 +1,20 @@
+server:
+  port: 8764
+spring:
+  application:
+    name: turbine
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:7001/eureka/
+  instance:
+    instance-id: turbine
+    prefer-ip-address: true   #访问路径显示为IP
+turbine:
+  app-config: front
+  aggregator:
+    cluster-config: default
+  cluster-name-expression: new String("default")
+  
+  
+  
