@@ -1,0 +1,17 @@
+server:
+  port: 8888
+spring:
+  application:
+    name: gateway
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:7001/eureka/
+  instance:
+    instance-id: gateway
+    prefer-ip-address: true   #访问路径显示为IP
+zuul:
+  routes:
+    user:
+      path: /erp/**
+      serviceId: front
