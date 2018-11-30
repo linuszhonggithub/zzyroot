@@ -1,0 +1,24 @@
+server:
+  port: 8021
+spring:
+  application:
+    name: zzypdf
+  redis:
+    host: localhost
+    database: 0
+    port: 6379
+    jedis:
+      pool:
+        max-active: 3
+        max-wait: -1
+        max-idle: 8
+        min-idle: 0 
+ 
+eureka:
+  client:
+    service-url:
+      defaultZone: http://192.168.0.69:7001/eureka/
+  instance:
+    instance-id: zzypdf
+    prefer-ip-address: true   #访问路径显示为IP
+filepath: c:/tmp/pdf
