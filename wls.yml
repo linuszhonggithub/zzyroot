@@ -1,0 +1,10 @@
+server:
+  port: 8086
+spring:
+  application:
+    name: zzywls
+zzyprime: 91473769
+zzydhbase: 2
+feign:
+  hystrix:
+    enabled: true
