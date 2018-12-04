@@ -4,7 +4,7 @@ spring:
   application:
     name: zzywlslinus
   datasource:
-    url: jdbc:mysql://localhost:3306/usercenter
+    url: jdbc:mysql://localhost:3306/wlslinus
     username: root
     password: Ns5R3IbQMdJopyQdM5kM5g==
     driver-class-name: com.mysql.jdbc.Driver
