@@ -4,7 +4,7 @@ spring:
   application:
     name: front
   redis:
-    host: localhost
+    host: https://github.com/linuszhonggithub/zzyroot.git #localhost
     database: 0
     port: 6379
     jedis:
