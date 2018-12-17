@@ -4,7 +4,7 @@ spring:
   application:
     name: front
   redis:
-    host: zzyredis.zb918y.ng.0001.use1.cache.amazonaws.com #localhost
+    host: zzyredis-001.zb918y.0001.use1.cache.amazonaws.com #localhost
     database: 0
     port: 6379
     jedis:
