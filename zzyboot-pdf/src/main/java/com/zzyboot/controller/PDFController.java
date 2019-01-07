@@ -1,54 +1,34 @@
 package com.zzyboot.controller;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.zzyboot.common.util.ZzyCommon;
+import com.zzyboot.pojo.ZzyParam;
+import com.zzyboot.pojo.ZzyResult;
 import com.zzyboot.service.PdfService;
 
 @RestController
 public class PDFController {
-	@Autowired
-	 private StringRedisTemplate redisTemplate;
-
+	
 	@Autowired
 	PdfService pdfService;
-	@Value("${filepath}")
+	@Value("${zzyfilepath}")
 	private String filepath;
+	@Value("${zzyurl}")
+	private String zzyurl;
 	
 	@PostMapping("/getpdf")
-	public String getpdf(@RequestBody String param){
+	public ZzyResult getpdf(@RequestBody String param){
 		
-		try {
-			param = URLDecoder.decode(param,"UTF-8");
-			System.out.println("getpdf param is " + param);
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		String[] paramA = param.split(ZzyCommon.STRSEPLINE);
-		//check if session is valid
-		String sessioninfo = paramA[paramA.length - 1];
-		String[] sessioninfoA = sessioninfo.split(ZzyCommon.STRSEPITEM);
-		String token = sessioninfoA[sessioninfoA.length - 1];
-		String username = sessioninfoA[sessioninfoA.length - 2];
-		
-		if(!ZzyCommon.tokenvalid(username, token,redisTemplate)){
-			//System.out.println("token not exists");
-			return ZzyCommon.ZZYFAIL_USERINVALID;
-		}
-
+		ZzyParam zp = ZzyCommon.getZzyParam(param);
+		String[] paramA = zp.getData().split(ZzyCommon.STRSEPLINE);
 		
 		String rpttype = "";
+		String lan = "";
 		String[] header = null;
 		String[][] body = null;
 		String[] width = null;
@@ -63,6 +43,8 @@ public class PDFController {
 					String pj1 = pj.substring(pj.indexOf(ZzyCommon.STREMAIL) + stremaillength);
 					if(pj0.equals("rpttype")){
 						rpttype = pj1;
+					}else if(pj0.equals("lan")){
+						lan = pj1;
 					}else if(pj0.equals("header")){
 						header = pj1.split(ZzyCommon.STRSEPITEM);
 					}else if(pj0.equals("width")){
@@ -79,7 +61,47 @@ public class PDFController {
 				}
 			}
 		}
-		String filename = filepath+"/" + rpttype + "/" + username + "/" + rpttype +"_" + username + ".pdf"; 
-		return pdfService.getPdf( filename,  rpttype,  header,  body, width,username);
+		String username = zp.getUsername();
+		String filename = rpttype + "/" + username + "/" + rpttype +"_" + username + ".pdf"; 
+		//filename = rpttype +"_" + username + ".pdf";
+		
+		pdfService.getPdf( filepath + filename,  rpttype,  header,  body, width,username, lan);
+		
+		ZzyResult zr = new ZzyResult();
+		zr.setFlag(ZzyCommon.ZZYSUCCESS);
+		zr.setResultmsg(zzyurl + '/' + filename);
+		return zr;
+		/*File file = new File(filename);
+		if(file.exists()){
+			 byte[] data = null;
+			 FileInputStream input = null;
+			 try {
+				 input = new FileInputStream(file);
+				 
+				 data = new byte[input.available()]; input.read(data);
+				 
+				 String encodeBase64 = Base64.encodeBase64String(data);
+				 //response.getOutputStream().write(data);
+				
+				 return encodeBase64;
+				 //return ZzyCommon.ZZYSUCCESS;
+			//System.out.println("encodeBase64 is " + encodeBase64);
+				// response.getOutputStream().write(encodeBase64.getBytes()); 
+			} catch (Exception e) {
+				e.printStackTrace();
+			}finally{
+				if(input != null)
+					try {
+						input.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			}
+			 
+			 
+		}*/
+		//return ZzyCommon.ZZYFAIL_PDF;
 	}
+	
 }

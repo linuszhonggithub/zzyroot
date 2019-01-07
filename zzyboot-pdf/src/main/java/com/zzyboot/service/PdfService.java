@@ -11,17 +11,22 @@ import com.zzyboot.util.pdfHeaderFooter;
 
 @Component
 public class PdfService {
-	public String getPdf(String filename, String rptname, String[] header, String[][] body,String[] widthA, String username){
+	public String getPdf(String filename, String rptname, String[] header, String[][] body,String[] widthA, String username, String lan){
 		
 		filename = ZzyCommon.getFilenameRight(filename);
-		
+		//System.out.println("=============lan is " + lan);
 		try {
 			OutputStream out = new FileOutputStream(filename);
 			pdfHeaderFooter phf = new pdfHeaderFooter();
+			
 			if(rptname.equals("rptpdf")){
-				String[] newheader = new String[header.length + 3];
+				String[] newheader = new String[5];
 				int index = 0;
-				newheader[index++] = "Report";
+				String title = "Report";
+				if(lan.equals("zh")){
+					title = "报表";
+				}
+				newheader[index++] = title;
 				{
 					String sWidth = "";
 					String sWidthSep = "";
@@ -53,7 +58,8 @@ public class PdfService {
 				header = newheader;
 				
 			}
-			phf.outPdf(out, filename, rptname, header, body);
+			phf.outPdf(out, filename, rptname, header, body,lan);
+			
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

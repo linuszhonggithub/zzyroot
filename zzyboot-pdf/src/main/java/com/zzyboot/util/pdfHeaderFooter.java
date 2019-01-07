@@ -53,10 +53,44 @@ import com.zzyboot.common.util.MoneyToWord;
 import com.zzyboot.common.util.ZzyCommon;
  
 public class pdfHeaderFooter{
-	public static Font columnfont=new Font(FontFamily.HELVETICA, 8, Font.BOLD);
-	public static Font datafont=new Font(FontFamily.HELVETICA, 8);
-	public static Font titlefont=new Font(FontFamily.HELVETICA, 22,Font.BOLD);
+	static BaseFont bfChinese = null;
+	static String language = "";
+	
+	public static Font getFont(int size){
+		return getFont(size,null);
+	}
+	public static Font getFont(int size, Integer type){
+		return getFont(size, type,null);
+	}
+	public static Font getFont(int size, Integer type, BaseColor color){
+		if(type == null){
+			type = Font.NORMAL;
+		}
+		if(color == null){
+			color = BaseColor.BLACK;
+		}
+		if(language.equals("zh")){
+			if(bfChinese == null){
+				try {
+					bfChinese = BaseFont.createFont( "STSongStd-Light" ,"UniGB-UCS2-H",BaseFont.NOT_EMBEDDED);
+					
+				} catch (DocumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			if(bfChinese != null){
+				return new Font(bfChinese, size,type);
+			}
+			
+		}
+		return new Font(FontFamily.HELVETICA, size,type,color);
+	}
  public pdfHeaderFooter(){}
+
     /** The resulting PDF file. */
     /**
      * Creates a PDF document.
@@ -182,10 +216,10 @@ public class pdfHeaderFooter{
         
         if(rptname.equals("cheque")){
         	cb.beginText();
-        	Font helvetica = new Font(FontFamily.HELVETICA, 11);
+        	Font helvetica = getFont(11);
             BaseFont bf_helv = helvetica.getCalculatedBaseFont(false);
 
-        	Font helvetica1 = new Font(FontFamily.HELVETICA, 13,Font.BOLD);
+        	Font helvetica1 = getFont(13,Font.BOLD);
             BaseFont bf_helv1 = helvetica1.getCalculatedBaseFont(false);
             //Date
             int itop=732;
@@ -254,10 +288,9 @@ public class pdfHeaderFooter{
         	//table.writeSelectedRows(0, 2, 0, 2, 2, 800, cb);
         }else if(rptname.equals("barcode128item")){
         	cb.beginText();
-        	Font helvetica = new Font(FontFamily.HELVETICA, 6);
+        	Font helvetica = getFont(6);
             BaseFont bf_helv = helvetica.getCalculatedBaseFont(false);
 
-        	//Font helvetica1 = new Font(FontFamily.HELVETICA, 6,Font.BOLD);
             //Date
             //draw detail
             cb.setFontAndSize(bf_helv, 6);
@@ -329,12 +362,12 @@ public class pdfHeaderFooter{
             cb.moveTo(100, 30);
             cb.lineTo(100,itop+5);
             cb.stroke();
-        	Font fitemcode = new Font(FontFamily.HELVETICA, 12,Font.ITALIC);
+        	Font fitemcode = getFont(12,Font.ITALIC);
             BaseFont bf_itemcode = fitemcode.getCalculatedBaseFont(false);
-        	Font fitembold = new Font(FontFamily.HELVETICA, 10,Font.BOLD);
+        	Font fitembold = getFont(10,Font.BOLD);
             BaseFont bf_itembold = fitembold.getCalculatedBaseFont(false);
 
-        	Font helvetica = new Font(FontFamily.HELVETICA, 10);
+        	Font helvetica = getFont(10);
             BaseFont bf_helv = helvetica.getCalculatedBaseFont(false);
 
             //Item
@@ -397,7 +430,7 @@ public class pdfHeaderFooter{
         	String sdate=strHeader[iindex++];
         	String comment=strHeader[iindex++];
         	String spage=strHeader[iindex++];
-        	Font helvetica = new Font(FontFamily.HELVETICA, 20);
+        	Font helvetica = getFont(20);
             BaseFont bf_helv = helvetica.getCalculatedBaseFont(false);
             int pagecnt=new Integer(spage);
             
@@ -540,7 +573,7 @@ public class pdfHeaderFooter{
     		PdfPTable tfoot = new PdfPTable(new float[] {1});
     		PdfPCell[] cfoot=new PdfPCell[1];
 
-    		cfoot[0]=new PdfPCell(new Phrase("Print date:"+ZzyCommon.getNow(),new Font(FontFamily.HELVETICA, 8,Font.BOLD)));
+    		cfoot[0]=new PdfPCell(new Phrase("Print date:"+ZzyCommon.getNow(),getFont(8, Font.BOLD)));
     		cfoot[0].setHorizontalAlignment(Element.ALIGN_LEFT);
 
     		setTableNoborder(tfoot,cfoot);
@@ -567,7 +600,7 @@ public class pdfHeaderFooter{
     		PdfPTable tfoot = new PdfPTable(new float[] {1});
     		PdfPCell[] cfoot=new PdfPCell[1];
 
-    		cfoot[0]=new PdfPCell(new Phrase("Print date:"+ZzyCommon.getNow(),new Font(FontFamily.HELVETICA, 8,Font.BOLD)));
+    		cfoot[0]=new PdfPCell(new Phrase("Print date:"+ZzyCommon.getNow(),getFont(8, Font.BOLD)));
     		cfoot[0].setHorizontalAlignment(Element.ALIGN_LEFT);
 
     		setTableNoborder(tfoot,cfoot);
@@ -598,7 +631,7 @@ public class pdfHeaderFooter{
     		PdfPTable tfoot = new PdfPTable(new float[] {1});
     		PdfPCell[] cfoot=new PdfPCell[1];
 
-    		cfoot[0]=new PdfPCell(new Phrase("Print date:"+ZzyCommon.getNow(),new Font(FontFamily.HELVETICA, 8,Font.BOLD)));
+    		cfoot[0]=new PdfPCell(new Phrase("Print date:"+ZzyCommon.getNow(),getFont(8, Font.BOLD)));
     		cfoot[0].setHorizontalAlignment(Element.ALIGN_LEFT);
 
     		setTableNoborder(tfoot,cfoot);
@@ -621,7 +654,7 @@ public class pdfHeaderFooter{
     		PdfPTable tfoot = new PdfPTable(new float[] {1});
     		PdfPCell[] cfoot=new PdfPCell[1];
 
-    		cfoot[0]=new PdfPCell(new Phrase("Print date:"+ZzyCommon.getNow(),new Font(FontFamily.HELVETICA, 8,Font.BOLD)));
+    		cfoot[0]=new PdfPCell(new Phrase("Print date:"+ZzyCommon.getNow(),getFont(8, Font.BOLD)));
     		cfoot[0].setHorizontalAlignment(Element.ALIGN_LEFT);
 
     		setTableNoborder(tfoot,cfoot);
@@ -651,68 +684,14 @@ public class pdfHeaderFooter{
     		PdfPTable tfoot = new PdfPTable(new float[] {1});
     		PdfPCell[] cfoot=new PdfPCell[1];
 
-    		cfoot[0]=new PdfPCell(new Phrase("Print date:"+ZzyCommon.getNow(),new Font(FontFamily.HELVETICA, 8,Font.BOLD)));
+    		cfoot[0]=new PdfPCell(new Phrase("Print date:"+ZzyCommon.getNow(),getFont(8, Font.BOLD)));
     		cfoot[0].setHorizontalAlignment(Element.ALIGN_LEFT);
 
     		setTableNoborder(tfoot,cfoot);
             ztb.settFoot(tfoot);
     		ztb.setFootHeight(1);
     		ztb.setBody(strBody);      		
-    	/*}else if(rptname.equals("cheque")){
-    		ztb.setHeaderFloat(new float[] {1});
-            // header
-    		PdfPTable tHeader = new PdfPTable(new float[] {1});
-    		int iindex=0;
-    		int icindex=0;
-    		PdfPTable tTop=new PdfPTable(new float[]{9,1,2});
-            PdfPCell[] pCellTop=new PdfPCell[9];
-            Font fTN=datafont;
-            pCellTop[icindex++]=new PdfPCell(new Phrase(" ",fTN));
-            pCellTop[icindex++]=new PdfPCell(new Phrase("DATE",fTN));
-            pCellTop[icindex]=new PdfPCell(new Phrase(strHeader[iindex++],fTN));
-
-            pCellTop[icindex++]=new PdfPCell(new Phrase(" ",fTN));
-            pCellTop[icindex++]=new PdfPCell(new Phrase(" ",fTN));
-            pCellTop[icindex++]=new PdfPCell(new Phrase(" ",fTN));
-
-            pCellTop[icindex++]=new PdfPCell(new Phrase(strHeader[iindex++],fTN));
-            pCellTop[icindex++]=new PdfPCell(new Phrase(strHeader[iindex++],fTN));
-            pCellTop[icindex++]=new PdfPCell(new Phrase(strHeader[iindex++],fTN));
-            //pCellTop[0].setHorizontalAlignment(Element.ALIGN_RIGHT);
-            setTableNoborder(tTop,pCellTop);
-            tHeader.addCell(tTop);
-            tHeader.addCell(new Phrase(" ",fTN));
-            tHeader.addCell(new Phrase(" ",fTN));
-            tHeader.addCell(new Phrase("  "+strHeader[iindex++],new Font(FontFamily.HELVETICA, 12,Font.BOLD)));
-            tHeader.addCell(new Phrase(" ",fTN));
-            tHeader.addCell(new Phrase(strHeader[iindex++],fTN));
-            tHeader.addCell(new Phrase(strHeader[iindex++]+","+strHeader[iindex++]+" "+strHeader[iindex++],fTN));
-            tHeader.addCell(new Phrase(strHeader[iindex++],fTN));
-            tHeader.addCell(new Phrase(" ",fTN));
-            tHeader.addCell(new Phrase(" ",fTN));
-            tHeader.addCell(new Phrase(" ",fTN));
-
-            ztb.settHeader(tHeader);
-
-    		tHeader.getDefaultCell().setBorder(Rectangle.NO_BORDER);
-            //tHeader.addCell(new Phrase(strHeader[0]));
-            ztb.settHeader(tHeader);
-    		ztb.setHeaderHeight(320);
-    		
-    		//columne header
-    		//zzyPdfCell col1=new zzyPdfCell(false,"left","Item Code");
-    		//zzyPdfCell col2=new zzyPdfCell(false,"left","Description");
-    		
-//    		zzyPdfCell col3=new zzyPdfCell(true,"center","",2.3f,64,"");
-    		PdfPTable tfoot = new PdfPTable(new float[] {1});
-    		PdfPCell[] cfoot=new PdfPCell[1];
-
-    		cfoot[0]=new PdfPCell(new Phrase(" "));
-
-    		setTableNoborder(tfoot,cfoot);
-            ztb.settFoot(tfoot);
-    		ztb.setFootHeight(1);
-    		ztb.setBody(strBody);    */  		
+    	 		
     		
     	}else if(rptname.equals("inspect")){
     		ztb.setHeaderFloat(new float[] {5,5,12,20});
@@ -726,9 +705,9 @@ public class pdfHeaderFooter{
             tHeader.addCell(new Phrase(""));
             PdfPTable tRight=new PdfPTable(new float[]{1});
             PdfPCell[] pCellRight=new PdfPCell[2];
-            Font fT=columnfont;
-            Font fTN=datafont;
-            pCellRight[0]=new PdfPCell(new Phrase("INSPECT:"+strHeader[iIndex],titlefont));
+            Font fT=getFont(8, Font.BOLD);
+            Font fTN=getFont(8);
+            pCellRight[0]=new PdfPCell(new Phrase("INSPECT:"+strHeader[iIndex],getFont(22,Font.BOLD)));
             pCellRight[0].setHorizontalAlignment(Element.ALIGN_RIGHT);
             PdfPTable tRight1=new PdfPTable(new float[]{1,1,1,1});
             PdfPCell[] pCellRight1=new PdfPCell[20];
@@ -770,7 +749,7 @@ public class pdfHeaderFooter{
     		PdfPTable tfoot = new PdfPTable(new float[] {1});
     		PdfPCell[] cfoot=new PdfPCell[1];
 
-    		cfoot[0]=new PdfPCell(new Phrase("Print date:"+ZzyCommon.getNow(),columnfont));
+    		cfoot[0]=new PdfPCell(new Phrase("Print date:"+ZzyCommon.getNow(),getFont(8, Font.BOLD)));
     		setTableNoborder(tfoot,cfoot);
             ztb.settFoot(tfoot);
     		ztb.setFootHeight(30);
@@ -791,11 +770,11 @@ public class pdfHeaderFooter{
             tHeader.addCell(new Phrase(""));
             PdfPTable tRight=new PdfPTable(new float[]{1});
             PdfPCell[] pCellRight=new PdfPCell[4];
-            Font fT=columnfont;
-            Font fTN=datafont;
-            pCellRight[0]=new PdfPCell(new Phrase("",titlefont));
-            pCellRight[1]=new PdfPCell(new Phrase("",titlefont));
-            pCellRight[2]=new PdfPCell(new Phrase(strHeader[iIndex++],titlefont));
+            Font fT=getFont(8, Font.BOLD);
+            Font fTN=getFont(8);
+            pCellRight[0]=new PdfPCell(new Phrase("",getFont(22,Font.BOLD)));
+            pCellRight[1]=new PdfPCell(new Phrase("",getFont(22,Font.BOLD)));
+            pCellRight[2]=new PdfPCell(new Phrase(strHeader[iIndex++],getFont(22,Font.BOLD)));
             PdfPTable tRight1=new PdfPTable(new float[]{1,1});
             PdfPCell[] pCellRight1=new PdfPCell[8];
             pCellRight1[0]=new PdfPCell(new Phrase("Date:",fT));
@@ -838,7 +817,7 @@ public class pdfHeaderFooter{
 
             PdfPTable tTitle=new PdfPTable(new float[]{8,5,8,5,8,12});
             PdfPCell[] pcTitle=new PdfPCell[12];
-            Font cfont1=new Font(FontFamily.HELVETICA, 8, Font.NORMAL,BaseColor.WHITE);
+            Font cfont1=getFont(8, Font.NORMAL,BaseColor.WHITE);
             //pCellRight1[0]=new PdfPCell(new Phrase("DATE :",cfont1));
             //pCellRight1[0].setBackgroundColor(BaseColor.BLACK);
 
@@ -895,10 +874,10 @@ public class pdfHeaderFooter{
     		PdfPTable tfoot1 = new PdfPTable(new float[] {1});
     		PdfPCell[] cfoot1=new PdfPCell[2];
     		
-    		cfoot1[0]=new PdfPCell(new Phrase("Comments",columnfont));
+    		cfoot1[0]=new PdfPCell(new Phrase("Comments",getFont(8, Font.BOLD)));
     		cfoot1[0].setHorizontalAlignment(Element.ALIGN_LEFT);
 
-    		cfoot1[1]=new PdfPCell(new Phrase(" "+strHeader[iIndex++],datafont));
+    		cfoot1[1]=new PdfPCell(new Phrase(" "+strHeader[iIndex++],getFont(8)));
     		cfoot1[1].setHorizontalAlignment(Element.ALIGN_LEFT);
     		
     		String ecofee=strHeader[iIndex++];
@@ -941,51 +920,51 @@ public class pdfHeaderFooter{
 
     		PdfPCell[] cfoot2=new PdfPCell[hlen];
     		int ifoot2=0;
-    		cfoot2[ifoot2]=new PdfPCell(new Phrase("Sub Total",datafont));
+    		cfoot2[ifoot2]=new PdfPCell(new Phrase("Sub Total",getFont(8)));
     		cfoot2[ifoot2++].setHorizontalAlignment(Element.ALIGN_LEFT);
-    		cfoot2[ifoot2]=new PdfPCell(new Phrase(subtotal,datafont));
+    		cfoot2[ifoot2]=new PdfPCell(new Phrase(subtotal,getFont(8)));
     		cfoot2[ifoot2++].setHorizontalAlignment(Element.ALIGN_RIGHT);
     		if(discount.length()>0 && !discount.equals(".00")){
-        		cfoot2[ifoot2]=new PdfPCell(new Phrase(DiscountDesc,datafont));
+        		cfoot2[ifoot2]=new PdfPCell(new Phrase(DiscountDesc,getFont(8)));
         		cfoot2[ifoot2++].setHorizontalAlignment(Element.ALIGN_LEFT);
-        		cfoot2[ifoot2]=new PdfPCell(new Phrase(discount,datafont));
+        		cfoot2[ifoot2]=new PdfPCell(new Phrase(discount,getFont(8)));
         		cfoot2[ifoot2++].setHorizontalAlignment(Element.ALIGN_RIGHT);
     		}
     		if(freight.length()>0 && !freight.equals(".00")){
-        		cfoot2[ifoot2]=new PdfPCell(new Phrase("Freight",datafont));
+        		cfoot2[ifoot2]=new PdfPCell(new Phrase("Freight",getFont(8)));
         		cfoot2[ifoot2++].setHorizontalAlignment(Element.ALIGN_LEFT);
-        		cfoot2[ifoot2]=new PdfPCell(new Phrase(freight,datafont));
+        		cfoot2[ifoot2]=new PdfPCell(new Phrase(freight,getFont(8)));
         		cfoot2[ifoot2++].setHorizontalAlignment(Element.ALIGN_RIGHT);
     			
     		}
     		if(pst.length()>0 && !pst.equals(".00")){
-        		cfoot2[ifoot2]=new PdfPCell(new Phrase("PST",datafont));
+        		cfoot2[ifoot2]=new PdfPCell(new Phrase("PST",getFont(8)));
         		cfoot2[ifoot2++].setHorizontalAlignment(Element.ALIGN_LEFT);
-        		cfoot2[ifoot2]=new PdfPCell(new Phrase(pst,datafont));
+        		cfoot2[ifoot2]=new PdfPCell(new Phrase(pst,getFont(8)));
         		cfoot2[ifoot2++].setHorizontalAlignment(Element.ALIGN_RIGHT);
     			
     		}
     		if(gst.length()>0 && !gst.equals(".00")){
-        		cfoot2[ifoot2]=new PdfPCell(new Phrase("GST/HST",datafont));
+        		cfoot2[ifoot2]=new PdfPCell(new Phrase("GST/HST",getFont(8)));
         		cfoot2[ifoot2++].setHorizontalAlignment(Element.ALIGN_LEFT);
-        		cfoot2[ifoot2]=new PdfPCell(new Phrase(gst,datafont));
+        		cfoot2[ifoot2]=new PdfPCell(new Phrase(gst,getFont(8)));
         		cfoot2[ifoot2++].setHorizontalAlignment(Element.ALIGN_RIGHT);
     			
     		}
 
     		if(ecofee.length()>0 && !ecofee.equals(".00")){
 
-        		cfoot2[ifoot2]=new PdfPCell(new Phrase("Eco Fee",new Font(FontFamily.HELVETICA, 8,Font.UNDERLINE)));
+        		cfoot2[ifoot2]=new PdfPCell(new Phrase("Eco Fee",getFont(8,Font.UNDERLINE)));
         		cfoot2[ifoot2++].setHorizontalAlignment(Element.ALIGN_LEFT);
-        		cfoot2[ifoot2]=new PdfPCell(new Phrase(ecofee,new Font(FontFamily.HELVETICA, 8,Font.UNDERLINE)));
+        		cfoot2[ifoot2]=new PdfPCell(new Phrase(ecofee,getFont(8,Font.UNDERLINE)));
         		cfoot2[ifoot2++].setHorizontalAlignment(Element.ALIGN_RIGHT);
     			
     		}
 
-    		cfoot2[ifoot2]=new PdfPCell(new Phrase("Total",columnfont));
+    		cfoot2[ifoot2]=new PdfPCell(new Phrase("Total",getFont(8, Font.BOLD)));
     		cfoot2[ifoot2++].setHorizontalAlignment(Element.ALIGN_LEFT);
-    		//cfoot2[11]=new PdfPCell(new Phrase("",columnfont));
-    		cfoot2[ifoot2]=new PdfPCell(new Phrase(total,columnfont));
+    		//cfoot2[11]=new PdfPCell(new Phrase("",getFont(8, Font.BOLD)));
+    		cfoot2[ifoot2]=new PdfPCell(new Phrase(total,getFont(8, Font.BOLD)));
     		cfoot2[ifoot2++].setHorizontalAlignment(Element.ALIGN_RIGHT);
 
     		setTableNoborder(tfoot2,cfoot2);
@@ -995,9 +974,9 @@ public class pdfHeaderFooter{
     		cfoot[0]=new PdfPCell(tfoot0);
     		String hststr="hstgstno";
     		if(mycompanyid.equals("2719"))hststr+="llc";
-    		cfoot[1]=new PdfPCell(new Phrase("HST/GST#: "+System.getProperty(hststr)+"  Please pay by invoice terms. Thank you for your business.",columnfont));
+    		cfoot[1]=new PdfPCell(new Phrase("HST/GST#: "+System.getProperty(hststr)+"  Please pay by invoice terms. Thank you for your business.",getFont(8, Font.BOLD)));
     		cfoot[1].setHorizontalAlignment(Element.ALIGN_CENTER);
-    		cfoot[2]=new PdfPCell(new Phrase("Please give us your feedback visit "+System.getProperty("suveylink"),new Font(FontFamily.HELVETICA, 8,Font.BOLD)));
+    		cfoot[2]=new PdfPCell(new Phrase("Please give us your feedback visit "+System.getProperty("suveylink"),getFont(8, Font.BOLD)));
     		cfoot[2].setHorizontalAlignment(Element.ALIGN_CENTER);
     		setTableNoborder(tfoot,cfoot);
             ztb.settFoot(tfoot);
@@ -1015,11 +994,11 @@ public class pdfHeaderFooter{
             tHeader.addCell(new Phrase(""));
             PdfPTable tRight=new PdfPTable(new float[]{1});
             PdfPCell[] pCellRight=new PdfPCell[4];
-            Font fT=columnfont;
-            Font fTN=datafont;
-            pCellRight[0]=new PdfPCell(new Phrase("",titlefont));
-            pCellRight[1]=new PdfPCell(new Phrase("",titlefont));
-            pCellRight[2]=new PdfPCell(new Phrase("Statement ["+strHeader[iIndex++]+"]",titlefont));
+            Font fT=getFont(8, Font.BOLD);
+            Font fTN=getFont(8);
+            pCellRight[0]=new PdfPCell(new Phrase("",getFont(22,Font.BOLD)));
+            pCellRight[1]=new PdfPCell(new Phrase("",getFont(22,Font.BOLD)));
+            pCellRight[2]=new PdfPCell(new Phrase("Statement ["+strHeader[iIndex++]+"]",getFont(22,Font.BOLD)));
             pCellRight[3]=new PdfPCell(new Phrase("DATE: ["+strHeader[iIndex++]+"]",fTN));
             setTableNoborder(tRight,pCellRight);
             tHeader.addCell(tRight);
@@ -1125,11 +1104,9 @@ public class pdfHeaderFooter{
     		
     		PdfPTable tfoot = new PdfPTable(new float[] {1});
     		PdfPCell[] cfoot=new PdfPCell[3];
-    		cfoot[0]=new PdfPCell(new Phrase("      "+strHeader[iIndex++],columnfont));
-    		cfoot[1]=new PdfPCell(new Phrase("      ",new Font(FontFamily.HELVETICA, 8,Font.BOLD)));
+    		cfoot[0]=new PdfPCell(new Phrase("      "+strHeader[iIndex++],getFont(8, Font.BOLD)));
+    		cfoot[1]=new PdfPCell(new Phrase("      ",getFont(8, Font.BOLD)));
     		cfoot[2]=getThanks();
-    		//new PdfPCell(new Phrase("Thank you for your business.",new Font(FontFamily.HELVETICA, 8,Font.BOLD)));
-    		//cfoot[2].setHorizontalAlignment(Element.ALIGN_CENTER);
     		setTableNoborder(tfoot,cfoot);
             ztb.settFoot(tfoot);
     		ztb.setFootHeight(40);
@@ -1164,7 +1141,7 @@ public class pdfHeaderFooter{
     		PdfPTable tfoot = new PdfPTable(new float[] {1});
     		PdfPCell[] cfoot=new PdfPCell[1];
 
-    		cfoot[0]=new PdfPCell(new Phrase("Print date:"+ZzyCommon.getNow(),new Font(FontFamily.HELVETICA, 8,Font.BOLD)));
+    		cfoot[0]=new PdfPCell(new Phrase("Print date:"+ZzyCommon.getNow(),getFont(8, Font.BOLD)));
     		cfoot[0].setHorizontalAlignment(Element.ALIGN_LEFT);
 
     		setTableNoborder(tfoot,cfoot);
@@ -1185,11 +1162,11 @@ public class pdfHeaderFooter{
             tHeader.addCell(alogin);
             tHeader.addCell(getBarcodeCell(cb,strHeader[iIndex++],1.8f,44,null));
             tHeader.addCell(new Phrase("Ship To:"));
-            tHeader.addCell(new Phrase(strHeader[iIndex++],titlefont));
+            tHeader.addCell(new Phrase(strHeader[iIndex++],getFont(22,Font.BOLD)));
             tHeader.addCell(new Phrase(""));
-            tHeader.addCell(new Phrase(strHeader[iIndex++],new Font(FontFamily.HELVETICA, 15)));
+            tHeader.addCell(new Phrase(strHeader[iIndex++],getFont(15)));
             tHeader.addCell(new Phrase(""));
-            tHeader.addCell(new Phrase(strHeader[iIndex++]+","+strHeader[iIndex++]+" "+strHeader[iIndex++],new Font(FontFamily.HELVETICA, 15)));
+            tHeader.addCell(new Phrase(strHeader[iIndex++]+","+strHeader[iIndex++]+" "+strHeader[iIndex++],getFont(15)));
             //tHeader.addCell(new Phrase(strHeader[iIndex++]));
             //tHeader.addCell(getBarcodeCell(cb,strHeader[iIndex++]));
 
@@ -1223,11 +1200,11 @@ public class pdfHeaderFooter{
             tHeader.addCell(new Phrase(""));
             PdfPTable tRight=new PdfPTable(new float[]{1});
             PdfPCell[] pCellRight=new PdfPCell[4];
-            Font fT=columnfont;
-            Font fTN=datafont;
-            pCellRight[0]=new PdfPCell(new Phrase("",titlefont));
-            pCellRight[1]=new PdfPCell(new Phrase("",titlefont));
-            pCellRight[2]=new PdfPCell(new Phrase("Parts PO",titlefont));
+            Font fT=getFont(8, Font.BOLD);
+            Font fTN=getFont(8);
+            pCellRight[0]=new PdfPCell(new Phrase("",getFont(22,Font.BOLD)));
+            pCellRight[1]=new PdfPCell(new Phrase("",getFont(22,Font.BOLD)));
+            pCellRight[2]=new PdfPCell(new Phrase("Parts PO",getFont(22,Font.BOLD)));
             PdfPTable tRight1=new PdfPTable(new float[]{1,1});
             PdfPCell[] pCellRight1=new PdfPCell[4];
             pCellRight1[0]=new PdfPCell(new Phrase("DATE :",fT));
@@ -1254,10 +1231,10 @@ public class pdfHeaderFooter{
     		PdfPTable tfoot = new PdfPTable(new float[] {1});
     		PdfPCell[] cfoot=new PdfPCell[2];
 
-    		cfoot[0]=new PdfPCell(new Phrase("  REMARKS:",columnfont));
+    		cfoot[0]=new PdfPCell(new Phrase("  REMARKS:",getFont(8, Font.BOLD)));
     		cfoot[0].setHorizontalAlignment(Element.ALIGN_LEFT);
 
-    		cfoot[1]=new PdfPCell(new Phrase("    "+strHeader[iIndex++],titlefont));
+    		cfoot[1]=new PdfPCell(new Phrase("    "+strHeader[iIndex++],getFont(22,Font.BOLD)));
     		cfoot[1].setHorizontalAlignment(Element.ALIGN_LEFT);
     		setTableNoborder(tfoot,cfoot);
             ztb.settFoot(tfoot);
@@ -1289,7 +1266,7 @@ public class pdfHeaderFooter{
     		tHeader.getDefaultCell().setUseDescender(true);
     		
             PdfPCell[] cellHeader=new PdfPCell[2];
-            cellHeader[0]=new PdfPCell(new Phrase("Container In ["+strHeader[2]+"]",titlefont));
+            cellHeader[0]=new PdfPCell(new Phrase("Container In ["+strHeader[2]+"]",getFont(22,Font.BOLD)));
             cellHeader[0].setHorizontalAlignment(Element.ALIGN_LEFT);
             cellHeader[1]=getBarcodeCell(cb,strHeader[iIndex++]);
             PdfPTable tH=new PdfPTable(new float[]{1});
@@ -1310,7 +1287,7 @@ public class pdfHeaderFooter{
             //foot
     		PdfPTable tfoot = new PdfPTable(new float[] {1});
     		PdfPCell[] cfoot=new PdfPCell[1];
-    		cfoot[0]=new PdfPCell(new Phrase(""+strHeader[iIndex++],columnfont));
+    		cfoot[0]=new PdfPCell(new Phrase(""+strHeader[iIndex++],getFont(8, Font.BOLD)));
     		cfoot[0].setHorizontalAlignment(Element.ALIGN_LEFT);
     		setTableNoborder(tfoot,cfoot);
             ztb.settFoot(tfoot);
@@ -1324,11 +1301,11 @@ public class pdfHeaderFooter{
     		tHeader.getDefaultCell().setBorder(Rectangle.NO_BORDER);
             
             tHeader.addCell(new Phrase("SHIP TO:"));
-            tHeader.addCell(new Phrase(strHeader[iIndex++],titlefont));
+            tHeader.addCell(new Phrase(strHeader[iIndex++],getFont(22,Font.BOLD)));
             tHeader.addCell(new Phrase(""));
-            tHeader.addCell(new Phrase(strHeader[iIndex++],new Font(FontFamily.HELVETICA, 15)));
+            tHeader.addCell(new Phrase(strHeader[iIndex++],getFont(15)));
             tHeader.addCell(new Phrase(""));
-            tHeader.addCell(new Phrase(strHeader[iIndex++]+","+strHeader[iIndex++]+" "+strHeader[iIndex++],new Font(FontFamily.HELVETICA, 15)));
+            tHeader.addCell(new Phrase(strHeader[iIndex++]+","+strHeader[iIndex++]+" "+strHeader[iIndex++],getFont(15)));
             tHeader.addCell(new Phrase("PO NUMBER:"+strHeader[iIndex++]));
             tHeader.addCell(new Phrase("Date:"+strHeader[iIndex++]));
             ztb.settHeader(tHeader);
@@ -1356,10 +1333,10 @@ public class pdfHeaderFooter{
     		tHeader.getDefaultCell().setUseDescender(true);
     		
             PdfPCell[] cellHeader=new PdfPCell[3];
-            cellHeader[0]=new PdfPCell(new Phrase("Reserve Ticket",titlefont));
+            cellHeader[0]=new PdfPCell(new Phrase("Reserve Ticket",getFont(22,Font.BOLD)));
             cellHeader[0].setHorizontalAlignment(Element.ALIGN_LEFT);
             cellHeader[1]=getBarcodeCell(cb,strHeader[iIndex++]);
-            cellHeader[2]=new PdfPCell(new Phrase("From:"+strHeader[iIndex++],new Font(FontFamily.HELVETICA, 16,Font.BOLD)));
+            cellHeader[2]=new PdfPCell(new Phrase("From:"+strHeader[iIndex++],getFont(16,Font.BOLD)));
             PdfPTable tH=new PdfPTable(new float[]{1});
             setTableNoborder(tH,cellHeader);
             PdfPCell cell=new PdfPCell(tH);            
@@ -1376,7 +1353,7 @@ public class pdfHeaderFooter{
             //foot
     		PdfPTable tfoot = new PdfPTable(new float[] {1});
     		PdfPCell[] cfoot=new PdfPCell[1];
-    		cfoot[0]=new PdfPCell(new Phrase("Comments:"+strHeader[iIndex++],columnfont));
+    		cfoot[0]=new PdfPCell(new Phrase("Comments:"+strHeader[iIndex++],getFont(8, Font.BOLD)));
     		cfoot[0].setHorizontalAlignment(Element.ALIGN_LEFT);
     		setTableNoborder(tfoot,cfoot);
             ztb.settFoot(tfoot);
@@ -1391,17 +1368,17 @@ public class pdfHeaderFooter{
     		tHeader.getDefaultCell().setUseDescender(true);
     		
             PdfPCell[] cellHeader=new PdfPCell[10];
-            cellHeader[0]=new PdfPCell(new Phrase("RMA",titlefont));
+            cellHeader[0]=new PdfPCell(new Phrase("RMA",getFont(22,Font.BOLD)));
             cellHeader[0].setHorizontalAlignment(Element.ALIGN_LEFT);
             cellHeader[1]=getBarcodeCell(cb,strHeader[iIndex++]);
-            cellHeader[2]=new PdfPCell(new Phrase("ISSUE DATE: "+strHeader[iIndex++],columnfont));
-            cellHeader[3]=new PdfPCell(new Phrase("FROM:",columnfont));
-            cellHeader[4]=new PdfPCell(new Phrase("RMA COMMENTS:",columnfont));
-            cellHeader[5]=new PdfPCell(new Phrase(strHeader[iIndex++],new Font(FontFamily.HELVETICA, 10,Font.NORMAL)));
-            cellHeader[6]=new PdfPCell(new Phrase(strHeader[iIndex+2],new Font(FontFamily.HELVETICA, 10,Font.NORMAL)));
-            cellHeader[7]=new PdfPCell(new Phrase(strHeader[iIndex++],new Font(FontFamily.HELVETICA, 10,Font.NORMAL)));
-            cellHeader[8]=new PdfPCell(new Phrase("",new Font(FontFamily.HELVETICA, 10,Font.NORMAL)));
-            cellHeader[9]=new PdfPCell(new Phrase(strHeader[iIndex++],new Font(FontFamily.HELVETICA, 10,Font.NORMAL)));
+            cellHeader[2]=new PdfPCell(new Phrase("ISSUE DATE: "+strHeader[iIndex++],getFont(8, Font.BOLD)));
+            cellHeader[3]=new PdfPCell(new Phrase("FROM:",getFont(8, Font.BOLD)));
+            cellHeader[4]=new PdfPCell(new Phrase("RMA COMMENTS:",getFont(8, Font.BOLD)));
+            cellHeader[5]=new PdfPCell(new Phrase(strHeader[iIndex++],getFont(10)));
+            cellHeader[6]=new PdfPCell(new Phrase(strHeader[iIndex+2],getFont(10)));
+            cellHeader[7]=new PdfPCell(new Phrase(strHeader[iIndex++],getFont(10)));
+            cellHeader[8]=new PdfPCell(new Phrase("",getFont(10)));
+            cellHeader[9]=new PdfPCell(new Phrase(strHeader[iIndex++],getFont(10)));
             PdfPTable tH=new PdfPTable(new float[]{5,5});
             setTableNoborder(tH,cellHeader);
             PdfPCell cell=new PdfPCell(tH);            
@@ -1421,7 +1398,7 @@ public class pdfHeaderFooter{
             //foot
     		PdfPTable tfoot = new PdfPTable(new float[] {1});
     		PdfPCell[] cfoot=new PdfPCell[1];
-    		cfoot[0]=new PdfPCell(new Phrase(strHeader[iIndex+1],columnfont));
+    		cfoot[0]=new PdfPCell(new Phrase(strHeader[iIndex+1],getFont(8, Font.BOLD)));
     		cfoot[0].setHorizontalAlignment(Element.ALIGN_LEFT);
     		setTableNoborder(tfoot,cfoot);
             ztb.settFoot(tfoot);
@@ -1438,7 +1415,7 @@ public class pdfHeaderFooter{
     		tHeader.getDefaultCell().setUseAscender(true);
     		tHeader.getDefaultCell().setUseDescender(true);
     		
-            Font f=new Font(FontFamily.HELVETICA, 20, Font.BOLD);
+            Font f=getFont(20, Font.BOLD);
             PdfPCell[] cellHeader=new PdfPCell[2];
             cellHeader[0]=new PdfPCell(new Phrase(strHeader[iIndex++],f));
             cellHeader[0].setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -1450,8 +1427,8 @@ public class pdfHeaderFooter{
             cell.setFixedHeight(80);
             cell.setBorder(Rectangle.NO_BORDER);
             tHeader.addCell(cell);
-            Font shiptofontbold=new Font(FontFamily.HELVETICA, 14, Font.BOLD);
-            Font shiptofont=new Font(FontFamily.HELVETICA, 11);
+            Font shiptofontbold=getFont(14, Font.BOLD);
+            Font shiptofont=getFont(11);
             
             PdfPTable tShipto=new PdfPTable(new float[]{1});
             tShipto.getDefaultCell().setBorder(Rectangle.NO_BORDER);
@@ -1510,8 +1487,8 @@ public class pdfHeaderFooter{
 
             PdfPTable tMisc=new PdfPTable(new float[]{2,2,3});
             tMisc.getDefaultCell().setBorder(Rectangle.NO_BORDER);
-            Font miscfontbold=new Font(FontFamily.HELVETICA, 11, Font.BOLD);
-            Font miscfont=new Font(FontFamily.HELVETICA, 11);
+            Font miscfontbold=getFont(11, Font.BOLD);
+            Font miscfont=getFont(11);
 
             PdfPCell tMCust=new PdfPCell(new Phrase("CUSTOMER P.O.",miscfontbold));
             tMCust.setBorder(Rectangle.RIGHT);
@@ -1562,7 +1539,7 @@ public class pdfHeaderFooter{
             Font afootf=new Font();
             afootf.setSize(14);
             PdfPTable tcomment=new PdfPTable(new float[]{1,2});
-            tcomment.addCell(new PdfPCell(new Phrase(strHeader[iIndex++],new Font(FontFamily.HELVETICA, 20, Font.BOLD))));
+            tcomment.addCell(new PdfPCell(new Phrase(strHeader[iIndex++],getFont(20, Font.BOLD))));
             tcomment.addCell(new PdfPCell(new Phrase(strHeader[iIndex++],afootf)));
             //Phrase afoot1=new Phrase(strHeader[iIndex++],afootf);
             //PdfPCell cellfoot1 = new PdfPCell(afoot1);
@@ -1593,9 +1570,9 @@ public class pdfHeaderFooter{
             tHeader.addCell(new Phrase(""));
             PdfPTable tRight=new PdfPTable(new float[]{1});
             PdfPCell[] pCellRight=new PdfPCell[2];
-            Font fT=columnfont;
-            Font fTN=datafont;
-            pCellRight[0]=new PdfPCell(new Phrase("Packing Slip",titlefont));
+            Font fT=getFont(8, Font.BOLD);
+            Font fTN=getFont(8);
+            pCellRight[0]=new PdfPCell(new Phrase("Packing Slip",getFont(22,Font.BOLD)));
             PdfPTable tRight1=new PdfPTable(new float[]{1,1});
             PdfPCell[] pCellRight1=new PdfPCell[6];
             pCellRight1[0]=new PdfPCell(new Phrase("WAREHOUSE :",fT));
@@ -1639,7 +1616,7 @@ public class pdfHeaderFooter{
             
             PdfPTable tTitle=new PdfPTable(new float[]{1,1,1,1,1});
             PdfPCell[] pcTitle=new PdfPCell[10];
-            Font cfont1=new Font(FontFamily.HELVETICA, 8, Font.NORMAL,BaseColor.WHITE);
+            Font cfont1=getFont(8, Font.NORMAL,BaseColor.WHITE);
             pcTitle[0]=new PdfPCell(new Phrase("ORDER DATE",cfont1));
             pcTitle[1]=new PdfPCell(new Phrase("CUSTOMER P.O.",cfont1));
             pcTitle[2]=new PdfPCell(new Phrase("INVOICE NUMBER",cfont1));
@@ -1684,24 +1661,24 @@ public class pdfHeaderFooter{
     		/*PdfPTable tfoot1 = new PdfPTable(new float[] {1});
     		PdfPCell[] cfoot1=new PdfPCell[2];
     		
-    		cfoot1[0]=new PdfPCell(new Phrase("    Packing Slip Comments:",columnfont));
+    		cfoot1[0]=new PdfPCell(new Phrase("    Packing Slip Comments:",getFont(8, Font.BOLD)));
     		cfoot1[0].setHorizontalAlignment(Element.ALIGN_LEFT);
 
-    		cfoot1[1]=new PdfPCell(new Phrase("    "+strHeader[iIndex++],datafont));
+    		cfoot1[1]=new PdfPCell(new Phrase("    "+strHeader[iIndex++],getFont(8)));
     		cfoot1[1].setHorizontalAlignment(Element.ALIGN_LEFT);
     		cfoot1[1].setFixedHeight(60);
     		setTableNoborder(tfoot1,cfoot1);
     		cfoot0[0]=new PdfPCell(tfoot1);*/
-    		cfoot0[0]=new PdfPCell(new Phrase(" ",columnfont));
-    		cfoot0[1]=new PdfPCell(new Phrase(" ",columnfont));
-    		cfoot0[2]=new PdfPCell(new Phrase(" ",columnfont));
+    		cfoot0[0]=new PdfPCell(new Phrase(" ",getFont(8, Font.BOLD)));
+    		cfoot0[1]=new PdfPCell(new Phrase(" ",getFont(8, Font.BOLD)));
+    		cfoot0[2]=new PdfPCell(new Phrase(" ",getFont(8, Font.BOLD)));
 
     		
     		cfoot0[3]=getComment("COMMENTS",strHeader[iIndex++],60);
     		PdfPTable tfoot2 = new PdfPTable(new float[] {1});
     		PdfPCell[] cfoot2=new PdfPCell[6];
     		
-    		cfoot2[0]=new PdfPCell(new Phrase("    ",columnfont));
+    		cfoot2[0]=new PdfPCell(new Phrase("    ",getFont(8, Font.BOLD)));
     		cfoot2[0].setHorizontalAlignment(Element.ALIGN_LEFT);
     		cfoot2[0].setFixedHeight(10);
     		String cartoncnt=strHeader[iIndex++];
@@ -1709,33 +1686,31 @@ public class pdfHeaderFooter{
     		for(int i=0;i<charlength;i++){
     			cartoncnt=" "+cartoncnt+" ";
     		}
-   			cfoot2[1]=new PdfPCell(new Phrase("["+cartoncnt+"]",new Font(FontFamily.HELVETICA, 10,Font.UNDERLINE)));
+   			cfoot2[1]=new PdfPCell(new Phrase("["+cartoncnt+"]",getFont(10,Font.UNDERLINE)));
     		cfoot2[1].setHorizontalAlignment(Element.ALIGN_LEFT);
     		//cfoot2[1].setFixedHeight(2);
-    		cfoot2[2]=new PdfPCell(new Phrase("TOTAL SHIPMENT PIECE COUNT",columnfont));
+    		cfoot2[2]=new PdfPCell(new Phrase("TOTAL SHIPMENT PIECE COUNT",getFont(8, Font.BOLD)));
     		cfoot2[2].setHorizontalAlignment(Element.ALIGN_LEFT);
     		
-    		cfoot2[3]=new PdfPCell(new Phrase("    ",columnfont));
+    		cfoot2[3]=new PdfPCell(new Phrase("    ",getFont(8, Font.BOLD)));
     		cfoot2[3].setHorizontalAlignment(Element.ALIGN_LEFT);
     		cfoot2[3].setFixedHeight(10);
-    		cfoot2[4]=new PdfPCell(new Phrase("_____________________________",columnfont));
+    		cfoot2[4]=new PdfPCell(new Phrase("_____________________________",getFont(8, Font.BOLD)));
     		cfoot2[4].setHorizontalAlignment(Element.ALIGN_LEFT);
     		//cfoot2[4].setFixedHeight(2);
-    		cfoot2[5]=new PdfPCell(new Phrase("DRIVER SIGNATURE",columnfont));
+    		cfoot2[5]=new PdfPCell(new Phrase("DRIVER SIGNATURE",getFont(8, Font.BOLD)));
     		cfoot2[5].setHorizontalAlignment(Element.ALIGN_LEFT);
 
     		setTableNoborder(tfoot2,cfoot2);
-    		cfoot0[4]=new PdfPCell(new Phrase(" ",columnfont));
+    		cfoot0[4]=new PdfPCell(new Phrase(" ",getFont(8, Font.BOLD)));
     		cfoot0[5]=new PdfPCell(tfoot2);
-    		cfoot0[6]=new PdfPCell(new Phrase(" ",columnfont));
-    		cfoot0[7]=new PdfPCell(new Phrase(" ",columnfont));
-    		cfoot0[8]=new PdfPCell(new Phrase(" ",columnfont));
+    		cfoot0[6]=new PdfPCell(new Phrase(" ",getFont(8, Font.BOLD)));
+    		cfoot0[7]=new PdfPCell(new Phrase(" ",getFont(8, Font.BOLD)));
+    		cfoot0[8]=new PdfPCell(new Phrase(" ",getFont(8, Font.BOLD)));
 
     		setTableNoborder(tfoot0,cfoot0);
     		cfoot[0]=new PdfPCell(tfoot0);
     		cfoot[1]=getThanks();
-    		//cfoot[1]=new PdfPCell(new Phrase("Thank you for your business.",new Font(FontFamily.HELVETICA, 9,Font.BOLD)));
-    		//cfoot[1].setHorizontalAlignment(Element.ALIGN_CENTER);
     		setTableNoborder(tfoot,cfoot);
             ztb.settFoot(tfoot);
     		ztb.setFootHeight(118);
@@ -1779,7 +1754,7 @@ public class pdfHeaderFooter{
     		tHeader.getDefaultCell().setUseDescender(true);
     		
             PdfPCell[] cellHeader=new PdfPCell[1];
-            cellHeader[0]=new PdfPCell(new Phrase(title,titlefont));
+            cellHeader[0]=new PdfPCell(new Phrase(title,getFont(22,Font.BOLD)));
             cellHeader[0].setHorizontalAlignment(Element.ALIGN_LEFT);
             PdfPTable tH=new PdfPTable(new float[]{1});
             setTableNoborder(tH,cellHeader);
@@ -1801,7 +1776,7 @@ public class pdfHeaderFooter{
             //foot
     		PdfPTable tfoot = new PdfPTable(new float[] {1});
     		PdfPCell[] cfoot=new PdfPCell[1];
-    		cfoot[0]=new PdfPCell(new Phrase("",columnfont));
+    		cfoot[0]=new PdfPCell(new Phrase("",getFont(8, Font.BOLD)));
     		cfoot[0].setHorizontalAlignment(Element.ALIGN_LEFT);
     		setTableNoborder(tfoot,cfoot);
             ztb.settFoot(tfoot);
@@ -1820,9 +1795,9 @@ public class pdfHeaderFooter{
             tHeader.addCell(new Phrase(""));
             PdfPTable tRight=new PdfPTable(new float[]{1});
             PdfPCell[] pCellRight=new PdfPCell[2];
-            Font fT=columnfont;
-            Font fTN=datafont;
-            pCellRight[0]=new PdfPCell(new Phrase("Quote No.  "+strHeader[iIndex++],titlefont));
+            Font fT=getFont(8, Font.BOLD);
+            Font fTN=getFont(8);
+            pCellRight[0]=new PdfPCell(new Phrase("Quote No.  "+strHeader[iIndex++],getFont(22,Font.BOLD)));
             pCellRight[0].setHorizontalAlignment(Element.ALIGN_RIGHT);
             PdfPTable tRight1=new PdfPTable(new float[]{5,6,16});
             String sdate=strHeader[iIndex++];
@@ -1879,18 +1854,18 @@ public class pdfHeaderFooter{
 
     		PdfPTable tfoot1 = new PdfPTable(new float[] {24,1,18,1});
     		PdfPCell[] cfoot1=new PdfPCell[8];
-    		cfoot1[0]=new PdfPCell(new Phrase("",datafont));
+    		cfoot1[0]=new PdfPCell(new Phrase("",getFont(8)));
     		cfoot1[0].setFixedHeight(10);
-    		cfoot1[1]=new PdfPCell(new Phrase("",datafont));
-    		cfoot1[2]=new PdfPCell(new Phrase("",datafont));
-    		cfoot1[3]=new PdfPCell(new Phrase("",datafont));
+    		cfoot1[1]=new PdfPCell(new Phrase("",getFont(8)));
+    		cfoot1[2]=new PdfPCell(new Phrase("",getFont(8)));
+    		cfoot1[3]=new PdfPCell(new Phrase("",getFont(8)));
     		
     		cfoot1[4]=getComment("NOTES:",strHeader[iIndex++],60);
-    		cfoot1[5]=new PdfPCell(new Phrase("",datafont));
+    		cfoot1[5]=new PdfPCell(new Phrase("",getFont(8)));
     		
     		PdfPTable tfoot5 = new PdfPTable(new float[] {1});
     		PdfPCell[] cfoot5=new PdfPCell[2];
-    		cfoot5[0]=new PdfPCell(new Phrase(strHeader[iIndex++],new Font(FontFamily.HELVETICA, 9,Font.BOLD)));
+    		cfoot5[0]=new PdfPCell(new Phrase(strHeader[iIndex++],getFont(9,Font.BOLD)));
     		cfoot5[0].setFixedHeight(16);
     		cfoot5[0].setHorizontalAlignment(Element.ALIGN_CENTER);
     		cfoot5[0].setBorder(Rectangle.BOTTOM);
@@ -1900,7 +1875,7 @@ public class pdfHeaderFooter{
     		tfoot5.addCell(cfoot5[1]);
     		cfoot1[6]=new PdfPCell(tfoot5);
     		cfoot1[6].setHorizontalAlignment(Element.ALIGN_CENTER);
-    		cfoot1[7]=new PdfPCell(new Phrase("",datafont));
+    		cfoot1[7]=new PdfPCell(new Phrase("",getFont(8)));
 
     		//cfoot1[5].setFixedHeight(16);
     		
@@ -1939,7 +1914,7 @@ public class pdfHeaderFooter{
     		tHeader.getDefaultCell().setUseDescender(true);
     		
             PdfPCell[] cellHeader=new PdfPCell[1];
-            cellHeader[0]=new PdfPCell(new Phrase("Warehouse "+strHeader[iIndex++],titlefont));
+            cellHeader[0]=new PdfPCell(new Phrase("Warehouse "+strHeader[iIndex++],getFont(22,Font.BOLD)));
             cellHeader[0].setHorizontalAlignment(Element.ALIGN_CENTER);
             PdfPTable tH=new PdfPTable(new float[]{5});
             setTableNoborder(tH,cellHeader);
@@ -1958,7 +1933,7 @@ public class pdfHeaderFooter{
             //foot
     		PdfPTable tfoot = new PdfPTable(new float[] {1});
     		PdfPCell[] cfoot=new PdfPCell[1];
-    		cfoot[0]=new PdfPCell(new Phrase("",columnfont));
+    		cfoot[0]=new PdfPCell(new Phrase("",getFont(8, Font.BOLD)));
     		cfoot[0].setHorizontalAlignment(Element.ALIGN_LEFT);
     		setTableNoborder(tfoot,cfoot);
             ztb.settFoot(tfoot);
@@ -1967,18 +1942,12 @@ public class pdfHeaderFooter{
     		ztb.setBody(strBody);   
     		
     	}
-        //PdfPTable table = new PdfPTable(new float[] { 2, 1, 2, 5, 1, 3, 2 });
+
         PdfPTable table = new PdfPTable(ztb.getHeaderFloat());
 
         table.setWidthPercentage(100f);
         table.getDefaultCell().setUseAscender(true);
         table.getDefaultCell().setUseDescender(true);
-        // Add the first header row
-        //Font f = new Font();
-        //f.setColor(BaseColor.WHITE);
-        //header table
-        
-        //Phrase aphrase=new Phrase("",f);
         PdfPCell cell = new PdfPCell(ztb.gettHeader());
         //cell.setBackgroundColor(BaseColor.BLACK);
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -1990,11 +1959,14 @@ public class pdfHeaderFooter{
         //table.getDefaultCell().setBackgroundColor(BaseColor.);
         zzyPdfCell[] sColumn=ztb.getColumn();
         if(sColumn==null)return table;
-        Font cfont=new Font(FontFamily.HELVETICA, 8, Font.NORMAL,BaseColor.WHITE);
+        Font cfont=getFont(8, Font.NORMAL);
+        
         for(int i=0;i<sColumn.length;i++){
+        	
         	PdfPCell cellColumn=new PdfPCell(new Phrase(sColumn[i].getsDesc().toUpperCase(),cfont));
+        	
         	cellColumn.setHorizontalAlignment(Element.ALIGN_CENTER);
-        	cellColumn.setBackgroundColor(BaseColor.BLACK);
+        	
         	cellColumn.setFixedHeight(16);
         	table.addCell(cellColumn);
         }
@@ -2034,7 +2006,7 @@ public class pdfHeaderFooter{
         	if(rptname.equals("rptpdf")){
             	for (int i=0;i<sbody.length;i++) {
                 	String[] si=sbody[i];
-                	if(si[0]!=null && Character.isWhitespace(si[0].charAt(0))){
+                	if(si[0]!=null && (si[0].length() < 1 || Character.isWhitespace(si[0].charAt(0)))){
                 		havegroup=true;
                 		break;
                 	}
@@ -2048,7 +2020,7 @@ public class pdfHeaderFooter{
             	String[] si=sbody[i];
             	int fontsize=fontsizedefault;
             	//if is sub, fontsize=9
-            	if(havegroup && si[0]!=null && si[0].length()>0 && Character.isWhitespace(si[0].charAt(0))){
+            	if(havegroup &&  si[0]!=null && (si[0].length()<1 || Character.isWhitespace(si[0].charAt(0)))){
             		fontsize=8;	
             	}else if(havegroup && si[0]!=null && si[0].length()>0){
             		bColor=!bColor;
@@ -2070,11 +2042,16 @@ public class pdfHeaderFooter{
             			
             		}else{
             			if(havegroup && fontsize==fontsizedefault){
-            				cellj = new PdfPCell(new Phrase(sj,new Font(FontFamily.HELVETICA, fontsize,Font.BOLD)));
+            				if(j>0){
+            					cellj = new PdfPCell(new Phrase(sj,getFont(8)));
+            				}else{
+            					cellj = new PdfPCell(new Phrase(sj,getFont(fontsize,Font.BOLD)));	
+            				}
+            				
             				cellj.setBorder(Rectangle.TOP|Rectangle.LEFT|Rectangle.RIGHT);
             				
             			}else{
-            				cellj = new PdfPCell(new Phrase(sj,new Font(FontFamily.HELVETICA, fontsize)));	
+            				cellj = new PdfPCell(new Phrase(sj,getFont(fontsize)));	
                 			if(havegroup){
                 				if(i==sbody.length-1){
                 					cellj.setBorder(Rectangle.BOTTOM|Rectangle.LEFT|Rectangle.RIGHT);
@@ -2126,7 +2103,7 @@ public class pdfHeaderFooter{
         return table;
     }
     public static PdfPCell getThanks(){
-    	PdfPCell pc=new PdfPCell(new Phrase("Thank you for your business.",new Font(FontFamily.HELVETICA, 9,Font.BOLD)));
+    	PdfPCell pc=new PdfPCell(new Phrase("Thank you for your business.",getFont(9,Font.BOLD)));
 		pc.setBackgroundColor(BaseColor.LIGHT_GRAY);
 		pc.setHorizontalAlignment(Element.ALIGN_CENTER);
 		pc.setFixedHeight(16);
@@ -2135,11 +2112,11 @@ public class pdfHeaderFooter{
     public static PdfPCell getComment(String title,String content,int iheight){
     	PdfPTable table=new PdfPTable(new float[]{1});
     	PdfPCell[] acell=new PdfPCell[2];
-        acell[0]=new PdfPCell(new Phrase(title,new Font(FontFamily.HELVETICA, 9, Font.NORMAL,BaseColor.WHITE)));
+        acell[0]=new PdfPCell(new Phrase(title,getFont(9, Font.NORMAL,BaseColor.WHITE)));
         acell[0].setBackgroundColor(BaseColor.BLACK);
         acell[0].setHorizontalAlignment(Element.ALIGN_CENTER);
         acell[0].setFixedHeight(16);
-		acell[1]=new PdfPCell(new Phrase("  "+content,new Font(FontFamily.HELVETICA, 9)));
+		acell[1]=new PdfPCell(new Phrase("  "+content,getFont(9)));
 		acell[1].setHorizontalAlignment(Element.ALIGN_LEFT);
 		acell[1].setFixedHeight(iheight);
 		table.addCell(acell[0]);
@@ -2213,8 +2190,8 @@ public class pdfHeaderFooter{
 			//  Auto-generated catch block
 			e.printStackTrace();
 		}
-        Font dFont=datafont;    	
-        Font dFontBold=columnfont;    	
+        Font dFont=getFont(8);    	
+        Font dFontBold=getFont(8, Font.BOLD);    	
         String saddress=System.getProperty("defaultAddress");if(saddress==null)saddress="8432 157 Street";
         String scity=System.getProperty("defaultCity");if(scity==null)scity="Vancouver";
         String sState=System.getProperty("defaultState");if(sState==null)sState="BC";
@@ -2326,7 +2303,7 @@ public class pdfHeaderFooter{
         }
         stitle+=otherinfo;
         
-        PdfPCell pc=new PdfPCell(new Phrase(stitle,new Font(FontFamily.HELVETICA, 7)));
+        PdfPCell pc=new PdfPCell(new Phrase(stitle,getFont(7)));
         //pc.setBorder(Rectangle.BOTTOM);
         pc.setBorder(Rectangle.NO_BORDER);
         pc.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -2334,15 +2311,17 @@ public class pdfHeaderFooter{
         
         return table;
    }
-    public void outPdf(OutputStream out,String filename,String rptname,String[] strHeader,String[][] strBody){
-    	outPdf(out,filename,rptname,strHeader,strBody,0,0,true);
+    public void outPdf(OutputStream out,String filename,String rptname,String[] strHeader,String[][] strBody,String lan){
+    	outPdf(out,filename,rptname,strHeader,strBody,0,0,true,lan);
     }
-    public void outPdf(OutputStream out,String filename,String rptname,String[] strHeader,String[][] strBody,float ipagesizew,float ipagesizeh, boolean needtime){
+    public void outPdf(OutputStream out,String filename,String rptname,String[] strHeader,String[][] strBody,float ipagesizew,float ipagesizeh, boolean needtime,String lan){
     	Rectangle pagesize=null;
     	if(ipagesizew>0)pagesize=new Rectangle(ipagesizew,ipagesizeh);
         try {
  			try {
-				new pdfHeaderFooter().createPdf(filename,rptname,strHeader,strBody,pagesize);
+ 				pdfHeaderFooter pf = new pdfHeaderFooter();
+ 				pdfHeaderFooter.language = lan;
+ 				pf.createPdf(filename,rptname,strHeader,strBody,pagesize);
 				PdfReader reader = new PdfReader(filename);
 		        
 		        // Create a stamper
@@ -2350,7 +2329,12 @@ public class pdfHeaderFooter{
 				boolean needpage=false;
 				String otherinfo="";
 				if(needtime){
-					otherinfo=" print by "+strHeader[strHeader.length-1];
+					String name = strHeader[strHeader.length-1];
+					otherinfo=" print by ";
+					if(lan.equals("zh")){
+						otherinfo = "打印：";
+					}
+					otherinfo+=name;
 				}
 		        int n = reader.getNumberOfPages();
 			        PdfStamper stamper= new PdfStamper(reader, out);
@@ -2515,7 +2499,7 @@ public class pdfHeaderFooter{
         if(!haslabel && isbarcode){
           cell = new PdfPCell(imageEAN,false);
         }else if(!isbarcode){
-        	cell=new PdfPCell(new Phrase(strDesc,new Font(FontFamily.HELVETICA, 11)));
+        	cell=new PdfPCell(new Phrase(strDesc,getFont(11)));
         }else{
         	PdfPTable table=new PdfPTable(new float[]{1});
         	table.getDefaultCell().setBorder(Rectangle.NO_BORDER);
@@ -2528,7 +2512,7 @@ public class pdfHeaderFooter{
             table.addCell(c1);
             
         	//PdfPCell c2=new PdfPCell(new Phrase(strDesc));
-        	PdfPCell c2=new PdfPCell(new Phrase(strDesc,new Font(FontFamily.HELVETICA, 10,Font.BOLD)));
+        	PdfPCell c2=new PdfPCell(new Phrase(strDesc,getFont(10,Font.BOLD)));
         	c2.setBorder(Rectangle.NO_BORDER);
             c2.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(c2);
@@ -2752,7 +2736,7 @@ public class pdfHeaderFooter{
     	//String strRptName="erpinvoice";
         //String strRptName="unicode";
     	//String strRptName="printpartlabel";
-    	String strRptName="quote";
+    	//String strRptName="quote";
     	//String strRptName="cheque";
        //String strRptName="partlabel";
     	//String strRptName="rptpdf";
@@ -2760,7 +2744,7 @@ public class pdfHeaderFooter{
     	//String strRptName="test";
     	//String strRptName="test1";
     	//String strRptName="shippinglabel";
-    	
+    	String strRptName="unicode";
     	//String strRptName="barcodeitemvertical";
     	if(strRptName.equals("test")){
     		test();
@@ -2774,7 +2758,74 @@ public class pdfHeaderFooter{
     		topdfbarcode(filepath+"/"+barcode+".pdf",barcode);
     		return;
     	}
-    	
+    	if(strRptName.equals("unicode")){
+			
+			String[][] MOVIES = {
+		        {
+		            "STSong-Light", "UniGB-UCS2-H",
+		            "Movie title: House of The Flying Daggers (China)",
+		            "directed by Zhang Yimou",
+		            "\u5341\u950a\u57cb\u4f0f"
+		        },
+		        {
+		            "KozMinPro-Regular", "UniJIS-UCS2-H",
+		            "Movie title: Nobody Knows (Japan)",
+		            "directed by Hirokazu Koreeda",
+		            "\u8ab0\u3082\u77e5\u3089\u306a\u3044"
+		        },
+		        {
+		            "HYGoThic-Medium", "UniKS-UCS2-H",
+		            "Movie title: '3-Iron' aka 'Bin-jip' (South-Korea)",
+		            "directed by Kim Ki-Duk",
+		            "\ube48\uc9d1"
+		        }
+		    };
+			 Document document = new Document();
+		        // step 2
+		        PdfWriter.getInstance(document, new FileOutputStream("c:/temp/unicode.pdf"));
+		        // step 3
+		        document.open();
+		        BaseFont bfChinese = BaseFont.createFont( "STSongStd-Light" ,"UniGB-UCS2-H",BaseFont.NOT_EMBEDDED);
+				Font fontC = getFont(12,Font.NORMAL);
+				document.add(new Paragraph("\u5341\u950a\u57cb\u4f0f",fontC));
+		        //document.add(new Paragraph("Hello World!测试\u5341\u950a\u57cb\u4f0f",fontC));
+		        FontSelector selector = new FontSelector();
+		        Font f1 = FontFactory.getFont(FontFactory.HELVETICA, 12);
+		        f1.setColor(BaseColor.BLUE);
+		        
+		      /*BaseFont bfChinese = BaseFont.createFont( "STSongStd-Light" ,"UniGB-UCS2-H",BaseFont.NOT_EMBEDDED);
+				Font fontC = new Font(bfChinese, 12,Font.NORMAL);
+				PdfPCell cell = new PdfPCell(new Paragraph("测试",fontC));
+	
+		        
+		        BaseFont bfChinese = BaseFont.createFont("STSongStd-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED);
+		        Font FontChinese=new Font(bfChinese,12,Font.NORMAL);
+		        Font f2 = FontFactory.getFont("MSung-Light",
+		                "UniCNS-UCS2-H", BaseFont.NOT_EMBEDDED);
+		        f2.setColor(BaseColor.RED);
+		        selector.addFont(f1);
+		        selector.addFont(f2);
+		        //Phrase ph = selector.process(MOVIES[0][4]);
+*/			        Paragraph t=new Paragraph("\u5341\u950a\u57cb\u4f0f");
+		        //Paragraph t=new Paragraph("测试",FontChinese);
+				;
+		        
+		        // step 4
+		        /*BaseFont bf;
+		        Font font;
+		 
+		        for (int i = 0; i < 3; i++) {
+		            bf = BaseFont.createFont(MOVIES[i][0], MOVIES[i][1], BaseFont.NOT_EMBEDDED);
+		            font = new Font(bf, 12);
+		            document.add(new Paragraph(bf.getPostscriptFontName(), font));
+		            for (int j = 2; j < 5; j++)
+		                document.add(new Paragraph(MOVIES[i][j], font));
+		            document.add(Chunk.NEWLINE);
+		        }*/
+		        // step 5
+		        document.close();				 
+			 return;
+		}
     	File afile=new File("c:/temp/mytest1.pdf");afile.delete();
     	afile=new File("c:/temp/mytest.pdf");afile.delete();
 		OutputStream out=new FileOutputStream("c:/temp/mytest1.pdf");
@@ -2787,7 +2838,7 @@ public class pdfHeaderFooter{
 				  for(int i=1;i<7;i++){
 					  strBody[i]=new String[]{"LAB"+i+"[LAB"+i+"]"};
 				  }
-					phf.outPdf(out,"c:/temp/mytest.pdf",strRptName,strHeader,strBody,82*4,85*6,true);					
+					phf.outPdf(out,"c:/temp/mytest.pdf",strRptName,strHeader,strBody,82*4,85*6,true,null);					
 			}else if(strRptName.equals("barcodelocation")){
 				  strHeader=new String[]{"barcodecomponent","linus"};
 				  strBody=new String[10][1];
@@ -2808,7 +2859,7 @@ public class pdfHeaderFooter{
 				  strBody[7]=new String[]{"EB2836-BK[691759024746]","EB1611-BK[691759023527]","EB1711-BK[691759023589]"};
 				  strBody[8]=new String[]{"EB3036-BK[691759024784]","EB1611-BK[691759023527]","EB1711-BK[691759023589]"};
 				  strBody[9]=new String[]{"EB3036-BK[691759024784]","EB1611-BK[691759023527]","EB1711-BK[691759023589]"};
-					phf.outPdf(out,"c:/temp/mytest.pdf",strRptName,strHeader,strBody,82*4,85*6,true);					
+					phf.outPdf(out,"c:/temp/mytest.pdf",strRptName,strHeader,strBody,82*4,85*6,true,null);					
 			}else if(strRptName.equals("barcode128item")){
 				  strHeader=new String[]{"barcodecomponent","linus"};
 				  int irow=20;
@@ -2822,7 +2873,7 @@ public class pdfHeaderFooter{
 				  for(int i=0;i<irow;i++){
 					  strBody[i]=new String[]{i+"EB3036-BK[691759024784]","$460.00","EB3036-BK[691759024784]","$460.00","EB3036-BK[691759024784]","$460.00","EB3036-BK[691759024784]","$460.00"};
 				  }
-				  phf.outPdf(out,"c:/temp/mytest.pdf",strRptName,strHeader,strBody,612,792,true);					
+				  phf.outPdf(out,"c:/temp/mytest.pdf",strRptName,strHeader,strBody,612,792,true,null);					
 			}else if(strRptName.equals("barcodeitemvertical")){
 				  strHeader=new String[]{"barcodecomponent","linus"};
 				  int irow=2;
@@ -2836,7 +2887,7 @@ public class pdfHeaderFooter{
 				  for(int i=0;i<irow;i++){
 					  strBody[i]=new String[]{i+"EB3036-BK[691759024784]","$460.00","EB3036-BK[691759024784]","$460.00","EB3036-BK[691759024784]","$460.00","EB3036-BK[691759024784]","$460.00"};
 				  }
-					phf.outPdf(out,"c:/temp/mytest.pdf",strRptName,strHeader,strBody,612,792,true);
+					phf.outPdf(out,"c:/temp/mytest.pdf",strRptName,strHeader,strBody,612,792,true,null);
 					
 			}else if(strRptName.equals("barcodeitem")){
 				  strHeader=new String[]{"42154[box]","linus"};
@@ -2846,15 +2897,13 @@ public class pdfHeaderFooter{
 					strBody[2]=new String[]{"691759002195"};
 					strBody[3]=new String[]{"691759002195"};
 					strBody[4]=new String[]{"691759002195"};
-					phf.outPdf(out,"c:/temp/mytest.pdf",strRptName,strHeader,strBody,82*4,85*6,true);					
+					phf.outPdf(out,"c:/temp/mytest.pdf",strRptName,strHeader,strBody,82*4,85*6,true,null);					
 			}else if(strRptName.equals("barcodeitemone")){
 				  strHeader=new String[]{""};
 				  strBody=new String[2][1];
 					strBody[0]=new String[]{"691759002195"};
 					strBody[1]=new String[]{"691759002185"};
-					phf.outPdf(out,"c:/temp/mytest.pdf",strRptName,strHeader,strBody,82*4,85*6,true);					
-					//phf.outPdf(out,"c:/temp/mytest.pdf",strRptName,strHeader,strBody,122*4,122*6);					
-					//phf.outPdf(out,"c:/temp/mytest.pdf",strRptName,strHeader,strBody,new Rectangle(70*4,70*6));					
+					phf.outPdf(out,"c:/temp/mytest.pdf",strRptName,strHeader,strBody,82*4,85*6,true,null);					
 			}else if(strRptName.equals("barcodepartbook")){
 				  strHeader=new String[]{"linus"};
 				  strBody=new String[15][1];
@@ -2870,7 +2919,7 @@ public class pdfHeaderFooter{
 					  //strBody[i]=new String[]{"acomponent"+i,"acomponent desc "+i,i+"10"};
 					  strBody[i]=new String[]{"2015-02-28","2015-02 "+i,"11,772.51",".00","11,772.51"};
 				  }
-				  phf.outPdf(out,"c:/temp/mytest.pdf",strRptName,strHeader,strBody,612,792,true);
+				  phf.outPdf(out,"c:/temp/mytest.pdf",strRptName,strHeader,strBody,612,792,true,null);
 			}else if(strRptName.equals("inspect")){
 				  strHeader=new String[]{"2719","inspectno","inspectby","inspectdate","pono","modelnumber","lamping","containernumber","quantityreceived","factory","quantityinspected"};
 				  strBody=new String[3][4];
@@ -2904,7 +2953,7 @@ public class pdfHeaderFooter{
 				  strHeader=new String[]{"1/2","linus","25688-0","shiptoname","shiptoadderss","cty","st","v2a 9c2","Vitran","334324324324"};
 				  strBody=new String[1][5];
 					strBody[0]=new String[]{"l","w","h","w","c"};
-				  phf.outPdf(out,"c:/temp/mytest.pdf",strRptName,strHeader,strBody,82*6,82*4,true);
+				  phf.outPdf(out,"c:/temp/mytest.pdf",strRptName,strHeader,strBody,82*6,82*4,true,null);
 			}else if(strRptName.equals("orderpartspo") || strRptName.equals("orderpartspooriginal")){
 				  strHeader=new String[]{"2719","Oct 21 13","996083-0","UNIVERSAL LAMP 24397-0"};
 				  strBody=new String[50][3];
@@ -2923,7 +2972,7 @@ public class pdfHeaderFooter{
 					strBody[5]=new String[]{"","BRUSHED NICKEL - BN"};
 					strBody[6]=new String[]{"","WHITE - WH"};
 					strBody[7]=new String[]{"","WALNUT - WT"};
-					phf.outPdf(out,"c:/temp/mytest.pdf",strRptName,strHeader,strBody,303,156,true);
+					phf.outPdf(out,"c:/temp/mytest.pdf",strRptName,strHeader,strBody,303,156,true,null);
 			}else if(strRptName.equals("printpartlabel")){
 				
 				  strHeader=new String[]{"acompany name","address","city","province","postalcode","pono","orderdate","1/5"};
@@ -3007,7 +3056,7 @@ public class pdfHeaderFooter{
 			  strHeader=new String[]{"C:/zhongzeyu/zhongzeyuwork/uploadimages/uploadimages/Images/this/shiplabel.png","LIVING LIGHTING #28","1742 BANK STREET","address1","FALLFLYER","61305-0","2016-10-25","comment dsfdsf dsfdsf dsafdsaf dsafdsf dsafds dsfds sAD SAFDSAFDSAF AFDSAFDSFDSAF DSAFDSFDSF DSAFDSAFDSAF DSFDSFDSAF FDSFDSFDSFD DSFDSAFDSAF FDFDFD FDFSFSDFSDF DSFDFDF SD","5"};
 			  strBody=new String[1][1];
 				strBody[0]=new String[]{"nothing"};
-				phf.outPdf(out,"c:/temp/mytest.pdf",strRptName,strHeader,strBody,85*6,82*4,true);
+				phf.outPdf(out,"c:/temp/mytest.pdf",strRptName,strHeader,strBody,85*6,82*4,true,null);
 			  
 		}else if(strRptName.equals("warehouselocation")){
 			  strHeader=new String[]{"Virtual Skids"};
@@ -3016,66 +3065,9 @@ public class pdfHeaderFooter{
 				strBody[i]=new String[]{"fjdsal32490832"+i,"kjfasoier3290"+i};
 			  }
 		}
-        //mergePdfs("c:/temp/mytests.pdf", new String []{"c:/temp/mytest.pdf","c:/temp/rptorder_23754_0.pdf"});
-			if(strRptName.equals("unicode")){
-				
-				String[][] MOVIES = {
-			        {
-			            "STSong-Light", "UniGB-UCS2-H",
-			            "Movie title: House of The Flying Daggers (China)",
-			            "directed by Zhang Yimou",
-			            "\u5341\u950a\u57cb\u4f0f"
-			        },
-			        {
-			            "KozMinPro-Regular", "UniJIS-UCS2-H",
-			            "Movie title: Nobody Knows (Japan)",
-			            "directed by Hirokazu Koreeda",
-			            "\u8ab0\u3082\u77e5\u3089\u306a\u3044"
-			        },
-			        {
-			            "HYGoThic-Medium", "UniKS-UCS2-H",
-			            "Movie title: '3-Iron' aka 'Bin-jip' (South-Korea)",
-			            "directed by Kim Ki-Duk",
-			            "\ube48\uc9d1"
-			        }
-			    };
-				 Document document = new Document();
-			        // step 2
-			        PdfWriter.getInstance(document, new FileOutputStream("c:/temp/unicode.pdf"));
-			        // step 3
-			        document.open();
-			        FontSelector selector = new FontSelector();
-			        Font f1 = FontFactory.getFont(FontFactory.HELVETICA, 12);
-			        f1.setColor(BaseColor.BLUE);
-			        BaseFont bfChinese = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED);
-			        Font FontChinese=new Font(bfChinese,12,Font.NORMAL);
-			        Font f2 = FontFactory.getFont("MSung-Light",
-			                "UniCNS-UCS2-H", BaseFont.NOT_EMBEDDED);
-			        f2.setColor(BaseColor.RED);
-			        selector.addFont(f1);
-			        selector.addFont(f2);
-			        //Phrase ph = selector.process(MOVIES[0][4]);
-			        Paragraph t=new Paragraph("\u5341\u950a\u57cb\u4f0f",FontChinese);
-			        document.add(t);
-			        
-			        // step 4
-			        BaseFont bf;
-			        Font font;
-			 
-			        for (int i = 0; i < 3; i++) {
-			            bf = BaseFont.createFont(MOVIES[i][0], MOVIES[i][1], BaseFont.NOT_EMBEDDED);
-			            font = new Font(bf, 12);
-			            document.add(new Paragraph(bf.getPostscriptFontName(), font));
-			            for (int j = 2; j < 5; j++)
-			                document.add(new Paragraph(MOVIES[i][j], font));
-			            document.add(Chunk.NEWLINE);
-			        }
-			        // step 5
-			        document.close();				 
-				 
-			}else{
+        {
 				if(!ZzyCommon.isInArray(new String[]{"barcodeitem","orderlabel","barcodecomponent","barcodelocation","cheque","partlabel","barcodeitem","orderlabel","barcodecomponent","barcodelocation","barcode128item"},strRptName))
-			        phf.outPdf(out,"c:/temp/mytest.pdf",strRptName,strHeader,strBody);
+			        phf.outPdf(out,"c:/temp/mytest.pdf",strRptName,strHeader,strBody,null);
 				
 			}
         

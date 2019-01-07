@@ -1,3 +1,5 @@
+zzyfilepath: C:/zzypdf/ 
+
 server:
   port: 8021
 spring:
@@ -13,12 +15,16 @@ spring:
         max-wait: -1
         max-idle: 8
         min-idle: 0 
- 
+  resources:
+    static-locations:
+    - file:${zzyfilepath}
+  mvc:
+    static-path-pattern: /**
 eureka:
   client:
     service-url:
-      defaultZone: http://192.168.0.69:7001/eureka/
+      defaultZone: http://localhost:7001/eureka/
   instance:
-    instance-id: zzypdf
+    instance-id: ${spring.application.name}
     prefer-ip-address: true   #访问路径显示为IP
-filepath: c:/tmp/pdf
+zzyurl: 192.168.0.121:8888/pdf   
