@@ -18,4 +18,5 @@ public @interface ZzyColumn {
 	boolean ispassword() default false;
 	String showright() default "";
 	String editright() default "";
+	String droplist() default "";
 }

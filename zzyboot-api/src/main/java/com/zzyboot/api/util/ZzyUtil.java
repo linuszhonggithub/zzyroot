@@ -1,5 +1,7 @@
 package com.zzyboot.api.util;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -10,11 +12,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+
 import com.google.common.hash.Hashing;
+import com.zzyboot.api.service.ZzyServiceImpl;
+import com.zzyboot.common.util.DES;
 import com.zzyboot.common.util.ZzyCommon;
 import com.zzyboot.entity.ZzyColumns;
 import com.zzyboot.entity.ZzyEntityParent;
 import com.zzyboot.entity.ZzyTables;
+import com.zzyboot.pojo.ZzyDataList;
+import com.zzyboot.pojo.ZzyParam;
+import com.zzyboot.pojo.ZzyResult;
+import com.zzyboot.pojo.ZzyTableResult;
 
 public class ZzyUtil {
 	public final static long ZZYTIMEOUTTABLEDATA=3600000l; //1 hour
@@ -136,5 +145,165 @@ public class ZzyUtil {
 				  .hashString(s, StandardCharsets.UTF_8)
 				  .toString();
 		return result;
+	}
+	private static boolean haveright(String right, String role){
+		
+		if(right == null || right.length() < 1){
+			return true;
+		}
+		if(right.equals("none")){
+			return false;
+		}
+		if(role.equals("super")){
+			return true;
+		}
+		if(right.equals(role)){
+			return true;
+		}
+		return false;
+	}
+	public static ZzyResult gettabledata(ZzyParam zp1,ZzyServiceImpl zzyService,String supers){
+		/*try {
+			param = URLDecoder.decode(param,"UTF-8");
+			System.out.println("gettabledata param is " + param);
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		ZzyResult zResult = new ZzyResult();
+		//String token = zp1.getToken();
+		String username = zp1.getUsername();
+		
+		
+		/*if(!ZzyCommon.tokenvalid(zp1,redisTemplate)){
+			System.out.println(ZzyCommon.ZZYFAIL_USERINVALID);
+			zResult.setFlag(ZzyCommon.ZZYFAIL);
+			zResult.setResultmsg(ZzyCommon.ZZYFAIL_USERINVALID);
+			return zResult;
+		}*/
+		
+		//StringBuilder sb = new StringBuilder();
+		long now = ZzyCommon.getNow();
+		/*
+		
+		now #
+		tablename|type:header~...|~... 
+		*/
+		String userrole = "";
+		Boolean issuper = false;
+		if(mapUserrole.containsKey(username)){
+			userrole = mapUserrole.get(username);
+		}else{
+			if(supers != null && supers.length() > 0){
+				try {
+					supers=DES.decryption(supers);
+					String[] supersA = supers.split(ZzyCommon.STRSEPITEM);
+					supers = supersA[0];
+					if(username.equals(supers)){
+						userrole = "super";
+					}
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				mapUserrole.put(username, userrole);
+				
+			}
+		}
+		if(userrole.equals("super")){
+			issuper = true;
+		}
+		
+
+		
+		//System.out.println("length is " + paramA.length);
+		zResult.setLasttime(now);
+		List<ZzyTableResult> tableList = new ArrayList<ZzyTableResult>();
+		zResult.setTableList(tableList);
+		for(ZzyDataList pi : zp1.getTabledata()){
+			String table = pi.getTablename();
+			//System.out.println("table is " + table);
+			long lltime = pi.getLasttime();
+			boolean tableisreadonly = false;
+			boolean tablecaninsert = true;
+			Boolean tablecandelete = null;
+			
+			ZzyEntityParent zp =getTableNewInstance(table);
+			if(zp == null){
+						continue;
+			}
+			ZzyTableResult ztr = new ZzyTableResult();
+			ztr.setTablename(table);
+							
+					
+			//System.out.println(zp.toStringZzy());
+			String scols="";String scolsReadonly="";
+			{
+				List<ZzyColumns> listColumn = zp.getColumnDef();
+				ZzyTables zt = zp.getTableDef();
+				if(!haveright(zt.getShowright(),userrole)){
+					//System.out.println("no show right for " +userrole+", zt.getShowright() is " + zt.getShowright());
+					continue;
+				}
+				if(!haveright(zt.getEditright(),userrole)){
+					//System.out.println("no edit right for " +userrole+", zt.getEditright() is " + zt.getEditright());
+					tableisreadonly = true;
+				}
+				if(!haveright(zt.getInsertright(),userrole)){
+					//System.out.println("no insert right for " +userrole+", zt.getInsertright() is " + zt.getInsertright());
+					tablecaninsert = false;
+				}
+				if(haveright(zt.getDeleteright(),userrole)){
+					//System.out.println("have delete right for " +userrole+", zt.getDeleteright() is " + zt.getDeleteright());
+					tablecandelete = true;
+				}
+				StringBuilder sbcols = new StringBuilder();
+				StringBuilder sbcolsisreadonly = new StringBuilder();
+				String strColsSeg = "";
+				String strColsSegReadonly = "";
+				for(ZzyColumns zcol: listColumn){
+					String showright = zcol.getShowright();
+					//System.out.println("show right0 for " + zcol.getName() + " is " + showright);
+					boolean haveright = haveright(showright, userrole);
+					//System.out.println("show right for " + zcol.getName() + " is " + haveright);
+					if(!haveright){
+						continue;
+					}
+					sbcols.append(strColsSeg + zcol.getName());
+					strColsSeg = ",";
+					String editright = zcol.getEditright();
+					boolean haverightEdit = true;
+					if(editright.equals("readonly")){
+						haverightEdit = false;
+					}
+					if(haverightEdit){
+						haverightEdit = haveright(editright, userrole);
+					}
+					if(!haverightEdit){
+						sbcolsisreadonly.append(strColsSegReadonly + zcol.getName());
+						strColsSegReadonly = ",";
+					}
+				}
+				scols =  sbcols.toString();
+				scolsReadonly = sbcolsisreadonly.toString();
+			}
+			//System.out.println("tableisreadonly is " + tableisreadonly+", tablecaninsert is " +tablecaninsert );
+			//sb.append(zzyService.findAll(ztr,zp,lltime,now,scols,scolsReadonly,tableisreadonly,tablecaninsert,tablecandelete,username, issuper)); 
+			ztr = zzyService.findAll(ztr,zp,lltime,now,scols,scolsReadonly,tableisreadonly,tablecaninsert,tablecandelete,username, issuper);
+			if(ztr!=null){
+				tableList.add(ztr);	
+			}
+
+		}
+		zResult.setFlag(ZzyCommon.ZZYSUCCESS);
+		return zResult;
+		/*String sResult = sb.toString();
+		System.out.println("sResult is " + sResult);
+		if(sResult!=null && sResult.length() > 0){
+			return now +sResult;
+		}
+		return "";*/
+		
+		
 	}
 }

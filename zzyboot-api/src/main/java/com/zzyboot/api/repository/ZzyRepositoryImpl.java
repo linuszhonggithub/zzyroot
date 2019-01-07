@@ -21,6 +21,7 @@ import com.zzyboot.entity.ZzyColumns;
 import com.zzyboot.entity.ZzyEntityParent;
 import com.zzyboot.entity.ZzyTables;
 import com.zzyboot.entity.Zzylog;
+import com.zzyboot.pojo.ZzyTableResult;
 
 @Transactional
 public class ZzyRepositoryImpl implements ZzyRepositoryCustom {
@@ -28,7 +29,8 @@ public class ZzyRepositoryImpl implements ZzyRepositoryCustom {
 	@PersistenceContext
 	private EntityManager em; 
 	private static Map<String,Long> zzyTABLEDATATime = new ConcurrentHashMap<String, Long>();
-	private static Map<String,String> zzyTABLEDATA = new ConcurrentHashMap<String, String>();
+	private static Map<String,ZzyTableResult> zzyTABLEDATA = new ConcurrentHashMap<String, ZzyTableResult>();
+	final private long oneday = 86400000l;
 	@Override
 	public String add(ZzyEntityParent z,String username) {
 		// TODO Auto-generated method stub
@@ -157,6 +159,9 @@ public class ZzyRepositoryImpl implements ZzyRepositoryCustom {
 		String[] tableA = table.split("\\.");
 		table = tableA[tableA.length - 1];*/
 		String where=z.getWhereUniq();
+		if(where.length() < 1){
+			return null;
+		}
 		String strCols = z.getCols();
 		Object[] whereparam=z.getWhereUniqParam();
 		Object resultOriginal = getSingle(strCols,table, where, whereparam);
@@ -195,7 +200,7 @@ public class ZzyRepositoryImpl implements ZzyRepositoryCustom {
 		return -1l;
 	}
 	public Object getSingle(String strSqlCol,String table, String where, Object[] whereparam) {
-		String strSql = "select " + strSqlCol + " from " + table;
+		String strSql = "select " + strSqlCol + " from " + table.toLowerCase();
 		if(where.length()>0){
 			strSql+=" where " + where;	
 		}
@@ -218,53 +223,69 @@ public class ZzyRepositoryImpl implements ZzyRepositoryCustom {
 		
 		return result;
 	}
-	public String findAllLog(String tablename, long begin, long end){
+	public ZzyTableResult  findAllLog(ZzyTableResult zt,String tablename, long begin, long end){
 		String logname = tablename + ZzyCommon.ZzyLogSuffix;
+		zt.setTablename(logname);
 		Zzylog z = (Zzylog)ZzyUtil.getTableNewInstance(logname);
 		if(z == null){
-			return "";
+			zt = null;
+			return zt;
 		}
 		Object[] whereparam = new Object[2];
 		whereparam[0] = begin;
 		whereparam[1] = end;
 		List<Zzylog> zResult = getMore(z,z.getCols(),"entrytime>?1 and entrytime<=?2",whereparam );
 		if(zResult!=null && zResult.size() > 0){
-			StringBuilder sbData = new StringBuilder();
-			sbData.append(ZzyCommon.STRSEPBLOCK + logname + ZzyCommon.STRSEPLINE);
+			//StringBuilder sbData = new StringBuilder();
+			//sbData.append(ZzyCommon.STRSEPBLOCK + logname + ZzyCommon.STRSEPLINE);
+			List<String> datalist = new ArrayList<String>();
 			for(ZzyEntityParent zr: zResult){
-						sbData.append(zr.toStringZzy() + ZzyCommon.STRSEPLINE);
+				datalist.add(zr.toStringZzy() + ZzyCommon.STRSEPLINE);
+						//sbData.append(zr.toStringZzy() + ZzyCommon.STRSEPLINE);
 			}
-			return sbData.toString();
+			zt.setDatalist(datalist);
+			return zt;
 		}
-		return "";
+		zt = null;
+		return zt;
 	}
-	public String findAll(ZzyEntityParent z, long begin, long end,String scols, String scolsReadonly,Boolean tableisreadonly,Boolean tablecaninsert,Boolean tablecandelete,String username) {
+	public ZzyTableResult findAll(ZzyTableResult zt,ZzyEntityParent z, long begin, long end,String scols, String scolsReadonly,Boolean tableisreadonly,Boolean tablecaninsert,Boolean tablecandelete,String username,Boolean issuper) {
 		String tablename = z.getTableName();
-		
+		System.out.println("ZzyRepositoryImpl findAll, begin["+begin+"] tablename " + tablename);
 		if(begin > 0){ //get from log
-			return findAllLog(tablename,begin,end);
+			return findAllLog(zt,tablename,begin,end);
 		}else{
 			//get from cache
 			StringBuilder sb = new StringBuilder();	
 			if(zzyTABLEDATATime.containsKey(tablename)){  //remove cache if over 1 hour
 				long lasttime = zzyTABLEDATATime.get(tablename);
+				System.out.println("ZzyRepositoryImpl findAll, with tablename " + tablename+", lasttime + timeout time is " + (lasttime + ZzyUtil.ZZYTIMEOUTTABLEDATA) +", now is " + ZzyCommon.getNow());
 				if(lasttime + ZzyUtil.ZZYTIMEOUTTABLEDATA > ZzyCommon.getNow()){
 					zzyTABLEDATATime.remove(tablename);
+					System.out.println("ZzyRepositoryImpl findAll, remove zzyTABLEDATATime with tablename " + tablename);
 					zzyTABLEDATA.remove(tablename);
-					return findAll(z, begin, end,scols, scolsReadonly,tableisreadonly,tablecaninsert,tablecandelete,username);
+					return findAll(zt,z, begin, end,scols, scolsReadonly,tableisreadonly,tablecaninsert,tablecandelete,username, issuper);
 				}
 			}
 			if(zzyTABLEDATATime.containsKey(tablename)){   //merge with log
+				System.out.println("ZzyRepositoryImpl findAll, get data from zzyTABLEDATATime with tablename " + tablename);
 				begin = zzyTABLEDATATime.get(tablename);
-				sb.append(zzyTABLEDATA.get(tablename));
-				sb.append(findAll(z, begin, end,scols, scolsReadonly,tableisreadonly,tablecaninsert,tablecandelete,username));
-				return sb.toString();
+				zt.setDatalist(zzyTABLEDATA.get(tablename).getDatalist());
+				System.out.println("==== the data list for zzyTableData " + tablename + " is " + zt.getDatalist().size());
+				if(zt.getDatalist().size() < 1){
+					begin = 0;
+				}
+				/*sb.append(zzyTABLEDATA.get(tablename));
+				sb.append(findAll(zt,z, begin, end,scols, scolsReadonly,tableisreadonly,tablecaninsert,tablecandelete,username,issuper));*/
+				zt = findAll(zt,z, begin, end,scols, scolsReadonly,tableisreadonly,tablecaninsert,tablecandelete,username,issuper);
+				return zt;
 			}
 			Object[] whereparam = new Object[1];
 			whereparam[0] = end;
 			List<ZzyColumns> cList = z.getColumnDef();
 			ZzyTables ztable = z.getTableDef();
-			sb.append(ZzyCommon.STRSEPBLOCK + tablename+ ZzyCommon.STRSEPITEM + ztable.toStringZzy(tablecaninsert,tableisreadonly,tablecandelete)+ZzyCommon.STRSEPLINE);
+			zt.setTabledesc(ztable.toStringZzy(tablecaninsert,tableisreadonly,tablecandelete));
+			//sb.append(ZzyCommon.STRSEPBLOCK + tablename+ ZzyCommon.STRSEPITEM + ztable.toStringZzy(tablecaninsert,tableisreadonly,tablecandelete)+ZzyCommon.STRSEPLINE);
 			String[] scolsA = scols.split(",");
 			//System.out.println("scols is  " + scols+", scolsA length is " + scolsA.length);
 			
@@ -310,7 +331,7 @@ public class ZzyRepositoryImpl implements ZzyRepositoryCustom {
 				}
 				
 			}
-
+			List<String> headerList = new ArrayList<String>(); 
 			for(ZzyColumns zc:cList){
 				//System.out.println("zcName is " + zc.getName());
 				if(!colSet.contains(zc.getName())){
@@ -320,24 +341,34 @@ public class ZzyRepositoryImpl implements ZzyRepositoryCustom {
 				if(colSetReadonly.contains(zc.getName())){
 					isreadonly = true;
 				}
+				boolean bissuper = issuper;
+				//System.out.println("tablename is " + tablename);
+				/*if(tablename.indexOf(ZzyCommon.ZzyLogSuffix) > 0){ //log no need id, zzylock
+					bissuper = false;
+				}*/
+				headerList.add(zc.toStringZzy(isreadonly,bissuper));
 				
-				sb.append(ZzyCommon.STRTYPEHEADER + ZzyCommon.STRSEPITEM + zc.toStringZzy(isreadonly) + ZzyCommon.STRSEPLINE);
+				//sb.append(ZzyCommon.STRTYPEHEADER + ZzyCommon.STRSEPITEM + zc.toStringZzy(isreadonly,bissuper) + ZzyCommon.STRSEPLINE);
 			}
+			zt.setHeaderlist(headerList);
 			//String[] validRoles = z.getCols();
 			List<ZzyEntityParent> zResult = getMore(z,scols,"entrytime<=?1",whereparam );
+			List<String> dataList = new ArrayList<String>();
 			if(zResult!=null && zResult.size() > 0){
 				StringBuilder sbData = new StringBuilder();
 				for(ZzyEntityParent zr: zResult){
-						sbData.append(zr.toStringZzy(colSet) + ZzyCommon.STRSEPLINE);
+					dataList.add(zr.toStringZzy(colSet));
+						//sbData.append(zr.toStringZzy(colSet) + ZzyCommon.STRSEPLINE);
 				}
-				sb.append(sbData.toString());
+				//sb.append(sbData.toString());
 				if(zzyTABLEDATA.containsKey(tablename)){
 					zzyTABLEDATA.remove(tablename);
 				}
-				zzyTABLEDATA.put(tablename, sbData.toString());
+				zzyTABLEDATA.put(tablename, zt);
 				zzyTABLEDATATime.put(tablename, end);
 			}
-			return sb.toString();	
+			zt.setDatalist(dataList);
+			return zt; //sb.toString();	
 		}
 		
 	}
@@ -357,7 +388,7 @@ public class ZzyRepositoryImpl implements ZzyRepositoryCustom {
 		if(strSqlCol == null || strSqlCol.length() < 1){
 			strSqlCol = z.getCols();
 		}
-		String strSql = "select " + strSqlCol + " from " + z.getTableName();
+		String strSql = "select " + strSqlCol + " from " + z.getTableName().toLowerCase();
 		if(where!=null && where.length()>0){
 			strSql+=" where " + where;	
 		}
@@ -457,7 +488,7 @@ public class ZzyRepositoryImpl implements ZzyRepositoryCustom {
 	public String update(ZzyEntityParent z, String updateinfo, String entryid) {
 		System.out.println("updateinfo is  " + updateinfo);
 		String[] updateinfos = updateinfo.split(ZzyCommon.STRSEPLINE);
-		String strSql = "select " + z.getCols() + " from " + z.getTableName() + " where id=?1";	
+		String strSql = "select " + z.getCols() + " from " + z.getTableName().toLowerCase() + " where id=?1";	
 		
 		//System.out.println(strSql);
 		Query query = em.createNativeQuery(strSql);
@@ -537,4 +568,14 @@ public class ZzyRepositoryImpl implements ZzyRepositoryCustom {
 		}
 		return null;
 	}
+	public void removeLog(String hostname,String tablename){
+		Long endtime = ZzyCommon.getNow() - oneday;
+		ZzyTableResult zt = new ZzyTableResult();
+		zt.setTablename(tablename);
+		ZzyTableResult logs = findAllLog(zt,tablename, 0, endtime);
+		
+		//return hostname + ZzyCommon.STRSEPBLOCK +tablename+ ZzyCommon.STRSEPBLOCK +endtime+ ZzyCommon.STRSEPBLOCK + logs;
+		
+	}
+	
 }

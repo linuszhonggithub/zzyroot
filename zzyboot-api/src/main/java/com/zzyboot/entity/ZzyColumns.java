@@ -20,8 +20,9 @@ public class ZzyColumns {
 	private Integer seq;
 	private String showright;
 	private String editright;
+	private String droplist;
 	private Field fi;
-	public ZzyColumns(String name, String label, String fieldtype,Boolean isPrimary, Boolean isKeyword, Boolean isUnique,Boolean isRequired, Boolean isFrozen, Integer minLength,Integer seq, Field f) {
+	public ZzyColumns(String name, String label, String fieldtype,Boolean isPrimary, Boolean isKeyword, Boolean isUnique,Boolean isRequired, Boolean isFrozen, Integer minLength,Integer seq,String droplist, Field f) {
 		super();
 		this.name = name;
 		this.label = label;
@@ -36,12 +37,18 @@ public class ZzyColumns {
 		this.isFrozen = isFrozen;
 		this.minLength = minLength;
 		this.seq = seq;
+		this.droplist = droplist;
 		this.fi = f;
 	}
 	public String toStringZzy(){
 		return toStringZzy(false);
 	}
 	public String toStringZzy(Boolean isreadonly){
+		//System.out.println("--------------------------ZzyColumns toStringZzy");
+		return toStringZzy(isreadonly,false);
+	}
+	public String toStringZzy(Boolean isreadonly,Boolean issuper){
+		//System.out.println("--------------------------ZzyColumns toStringZzy, is super is " + issuper);
 		StringBuilder sb = new StringBuilder();
 		sb.append("name:"+this.getName());
 		if(this.label == null || this.label.length() < 1){
@@ -52,14 +59,25 @@ public class ZzyColumns {
 		}
 		
 		sb.append(ZzyCommon.STRSEPITEM + "label:"+this.getLabel());
-		sb.append(ZzyCommon.STRSEPITEM + "fieldtype:"+this.getFieldtype());
+		String fieldtype = this.getFieldtype();
+		Boolean isrequired = this.getIsRequired();
+		if(issuper && fieldtype.equals("hidden")){
+			fieldtype = "int";
+			isreadonly = true;
+			isrequired = false;
+			System.out.println("ZzyColumns hidden fieldtype is " + fieldtype);
+		}
+		
+		
+		sb.append(ZzyCommon.STRSEPITEM + "fieldtype:"+fieldtype);
 		sb.append(ZzyCommon.STRSEPITEM + "isprimary:"+this.getIsPrimary());
 		sb.append(ZzyCommon.STRSEPITEM + "iskeyword:"+this.getIsKeyword());
 		sb.append(ZzyCommon.STRSEPITEM + "isunique:"+this.getIsUnique());
-		sb.append(ZzyCommon.STRSEPITEM + "isrequired:"+this.getIsRequired());
+		sb.append(ZzyCommon.STRSEPITEM + "isrequired:"+isrequired);
 		sb.append(ZzyCommon.STRSEPITEM + "isfrozen:"+this.getIsFrozen());
 		sb.append(ZzyCommon.STRSEPITEM + "minlength:"+this.getMinLength());
 		sb.append(ZzyCommon.STRSEPITEM + "isreadonly:"+isreadonly);
+		sb.append(ZzyCommon.STRSEPITEM + "droplist:"+this.getDroplist());
 
 		return sb.toString();
 	}

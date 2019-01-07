@@ -32,7 +32,7 @@ public class ZzyEntityParent implements Cloneable {
 	
 	@Version
 	@Column
-	@ZzyColumn(fieldtype = "hidden",seq=90000)
+	@ZzyColumn(fieldtype = "hidden",label = "Lock",seq=90000)
 	protected Long zzyoptlock = 0L;
 	
 	
@@ -64,11 +64,11 @@ public class ZzyEntityParent implements Cloneable {
 
 	
 	@Column(length = 50)
-	@ZzyColumn(fieldtype = "text",seq=90, editright = "readonly")
+	@ZzyColumn(fieldtype = "text",label = "Entry By" ,seq=90, editright = "readonly")
 	protected String entryid;
 	
 	@Column
-	@ZzyColumn(fieldtype = "datetime",seq=80, editright = "readonly")
+	@ZzyColumn(fieldtype = "datetime",label = "Entry Time",seq=80, editright = "readonly")
 	protected Long entrytime;
 	
 	public ZzyTables getTableDef(){
@@ -122,10 +122,12 @@ public class ZzyEntityParent implements Cloneable {
 			}
 		}
 		ZzyUtil.tableTables.put(tablename, zt);
-		if(this.getClass().getSuperclass()!=null){
-			Field[] fields = this.getClass().getSuperclass().getDeclaredFields();
+		Class thisClass = this.getClass(); 
+		while(thisClass.getSuperclass()!=null){
+			Field[] fields = thisClass.getSuperclass().getDeclaredFields();
 			//Field[] fields = this.getClass().getFields();	
-			thisColumn = getColumnDef(fields);
+			thisColumn.addAll(getColumnDef(fields));
+			thisClass = thisClass.getSuperclass();
 		}
 		Field[] fields = this.getClass().getDeclaredFields();
 		
@@ -152,7 +154,7 @@ public class ZzyEntityParent implements Cloneable {
 				//if(aj.getClass().equals(ZzyColumn.class)){
 				if(aj.annotationType().equals(ZzyColumn.class)){
 					if(zc == null){
-						zc = new ZzyColumns(fi.getName(), "" ,"",false,false,false,false,false,0,100, fi);
+						zc = new ZzyColumns(fi.getName(), "" ,"",false,false,false,false,false,0,100,"", fi);
 						//System.out.println("f ajj" + i + " is " + fi.getName());
 					}
 					ZzyColumn ajj = (ZzyColumn)aj;
@@ -168,12 +170,13 @@ public class ZzyEntityParent implements Cloneable {
 					if(ajj.fieldtype() != null)zc.setFieldtype(ajj.fieldtype());
 					if(ajj.editright() != null)zc.setEditright(ajj.editright());
 					if(ajj.isfrozen())zc.setIsFrozen(true);
+					if(ajj.droplist() != null)zc.setDroplist(ajj.droplist());
 				}else if(aj.annotationType().equals(Column.class)){
 					if(zc == null){
 						/*if(fi.getName().equals("zzyoptlock")){
 							continue;
 						}*/
-						zc = new ZzyColumns(fi.getName(), "" ,"" ,false,false,false,false,false,0,100,fi);
+						zc = new ZzyColumns(fi.getName(), "" ,"" ,false,false,false,false,false,0,100,"",fi);
 						//System.out.println("f cj" + i + " is " + fi);
 					}
 					Column cj = (Column)aj;
@@ -244,13 +247,13 @@ public class ZzyEntityParent implements Cloneable {
 			}
 			Field fi = z.getFi();
 			fi.setAccessible(true);
-			System.out.println("fi is " +fi);
+			//System.out.println("fi is " +fi);
 			String si = null;
 			if(index < s.length){
 				si = s[index++]+"";
 			}
 			
-			System.out.println(" setValues " + fi.getName()+",values is " + si);
+			//System.out.println(" setValues " + fi.getName()+",values is " + si);
 			setField(fi,this,si);
 		}
 	}

@@ -9,11 +9,15 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.zzyboot.api.repository.ZzyRepository;
 import com.zzyboot.api.util.ZzyUtil;
 import com.zzyboot.common.util.ZzyCommon;
 import com.zzyboot.entity.ZzyEntityParent;
+import com.zzyboot.pojo.ZzyParam;
+import com.zzyboot.pojo.ZzyResult;
+import com.zzyboot.pojo.ZzyTableResult;
 
 @Service
 public class ZzyServiceImpl implements ZzyService {
@@ -37,9 +41,9 @@ public class ZzyServiceImpl implements ZzyService {
 		return repository.findAll(z);
 	}
 	@Override
-	public String findAll(ZzyEntityParent z, long begin, long end,String scols, String scolsReadonly,Boolean tableisreadonly,Boolean tablecaninsert,Boolean tablecandelete,String username) {
+	public ZzyTableResult findAll(ZzyTableResult zt,ZzyEntityParent z, long begin, long end,String scols, String scolsReadonly,Boolean tableisreadonly,Boolean tablecaninsert,Boolean tablecandelete,String username,Boolean issuper) {
 		// TODO Auto-generated method stub
-		return repository.findAll(z,begin,end,scols,scolsReadonly,tableisreadonly,tablecaninsert,tablecandelete,username);
+		return repository.findAll(zt,z,begin,end,scols,scolsReadonly,tableisreadonly,tablecaninsert,tablecandelete,username,issuper);
 	}
 
 	@Override
@@ -60,44 +64,27 @@ public class ZzyServiceImpl implements ZzyService {
 	public String save(String param){
 		return save(param, null, null);
 	}
-	public String save(String param,String[] cols, String[] values){
-		try {
-			param = URLDecoder.decode(param,"UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public String save(String param0,String[] cols, String[] values){
+
+		ZzyParam zp = ZzyCommon.getZzyParam(param0);
+		String param = zp.getData();
 		System.out.println("save param is " + param);
 		String[] paramA = param.split(ZzyCommon.STRSEPLINE);
-		//check if session is valid
-		String sessioninfo = paramA[paramA.length - 1];
-		System.out.println("sessioninfo is " + sessioninfo);
-		String[] sessioninfoA = sessioninfo.split(ZzyCommon.STRSEPITEM);
-		System.out.println("sessioninfoA length is " + sessioninfoA.length);
-		String token = sessioninfoA[sessioninfoA.length - 1];
-		String username = sessioninfoA[sessioninfoA.length - 2];
 		
-		
-		if(!ZzyCommon.tokenvalid(username, token,redisTemplate)){
-			System.out.println(ZzyCommon.ZZYFAIL_USERINVALID);
+		if(!ZzyUtil.zzyUserCols.containsKey(zp.getUsername())){
+			System.out.println("user " + zp.getUsername() + " have no table columns");
 			return ZzyCommon.ZZYFAIL_USERINVALID;
 		}
-		if(!ZzyUtil.zzyUserCols.containsKey(username)){
-			System.out.println("user " + username + " have no table columns");
-			return ZzyCommon.ZZYFAIL_USERINVALID;
-		}
-		param=param.substring(0,param.lastIndexOf(ZzyCommon.STRSEPLINE));
-		//param = paramA[0];
 		int index = param.indexOf(ZzyCommon.STRSEPBLOCK);
 		String tablename = param.substring(0,index);
 		param = param.substring(index + ZzyCommon.STRSEPBLOCK.length());
 		String tablenamelow = tablename.toLowerCase();
-		if(!ZzyUtil.zzyUserCols.get(username).containsKey(tablenamelow)){
-			System.out.println("user " + username + " have not set table columns for " + tablenamelow);
+		if(!ZzyUtil.zzyUserCols.get(zp.getUsername()).containsKey(tablenamelow)){
+			System.out.println("user " + zp.getUsername() + " have not set table columns for " + tablenamelow);
 			return ZzyCommon.ZZYFAIL_USERINVALID;
 			
 		}
-		Set<String> strColsOld = ZzyUtil.zzyUserCols.get(username).get(tablenamelow);
+		Set<String> strColsOld = ZzyUtil.zzyUserCols.get(zp.getUsername()).get(tablenamelow);
 		ZzyEntityParent z =ZzyUtil.getTableNewInstance(tablename);
 		if(z == null){
 			System.out.println("ZzyService save: table " + tablename +" new instance failed");
@@ -119,9 +106,9 @@ public class ZzyServiceImpl implements ZzyService {
 		if(objA[0].length() < 1){ //add
 			ZzyEntityParent znew = z.newObj(z, objA,z.getColumnDef(),strCols);
 			
-			return add(znew, username);
+			return add(znew, zp.getUsername());
 		}else if(objA.length < 2 && paramA.length < 3){ //delete
-			return deleteAll(z, objA[0],username);
+			return deleteAll(z, objA[0],zp.getUsername());
 		}else{ //update  save param is zzyuserzy#500zy~cellzy:linus8cell8zy~zy!zy~linuszhongzy~56341
 			/*String id = objA[0];
 			ZzyEntityParent zupdate = repository.findByID(z,id);
@@ -134,8 +121,14 @@ public class ZzyServiceImpl implements ZzyService {
 				objA[i] = oiA[1];
 			}
 			ZzyEntityParent znew = zupdate.newObj(zupdate, objA,z.getColumnDef(),strCols);*/
-			return update(z,param,username);
+			return update(z,param,zp.getUsername());
 		}
+	}
+	public void removeLog(String hostname,String tablename) {
+		repository.removeLog(hostname,tablename);
+		//System.out.println("removelog " + rlog);
+		//sendrequest to LogService
+		
 	}
 	
 }
