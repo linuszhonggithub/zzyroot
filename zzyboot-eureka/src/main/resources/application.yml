@@ -5,7 +5,7 @@ spring:
     name: servicecenter
 eureka:
   instance:
-    hostname: 192.168.0.69  #可以设置DNS名
+    hostname: localhost  #可以设置DNS名
     appname: servicecenter
   client:
     register-with-eureka: false  #单机版 false 表示不向服务中心注册自己

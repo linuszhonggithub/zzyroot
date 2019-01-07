@@ -1,0 +1,30 @@
+server:
+  port: 8086
+spring:
+  application:
+    name: zzywlslinus
+  datasource:
+    url: jdbc:mysql://localhost:3306/wlslinus
+    username: root
+    password: Ns5R3IbQMdJopyQdM5kM5g==
+    driver-class-name: com.mysql.jdbc.Driver
+  jpa:
+    database: mysql
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  redis:
+    host: localhost
+    database: 0
+    port: 6379
+    jedis:
+      pool:
+        max-active: 3
+        max-wait: -1
+        max-idle: 8
+        min-idle: 0    
+zzyprime: 91473769
+zzydhbase: 2
+feign:
+  hystrix:
+    enabled: true

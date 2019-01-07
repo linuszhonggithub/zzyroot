@@ -1,0 +1,21 @@
+server:
+  port: 8085
+spring:
+  application:
+    name: front
+  redis:
+    host: localhost
+    database: 0
+    port: 6379
+    jedis:
+      pool:
+        max-active: 3
+        max-wait: -1
+        max-idle: 8
+        min-idle: 0 
+#authserver: http://localhost:8001
+zzyprime: 91473769
+zzydhbase: 2
+feign:
+  hystrix:
+    enabled: true

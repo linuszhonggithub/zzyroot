@@ -1,5 +1,5 @@
 server:
-  port: 3344
+  port: 3434
 spring:
   application:
     name: configcenter
@@ -11,7 +11,7 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://192.168.0.69:7001/eureka/
+      defaultZone: http://localhost:7001/eureka/ #http://zbservicecenter-env.utp7746uxp.us-east-1.elasticbeanstalk.com/eureka/
   instance:
-    instance-id: configcenter
+    instance-id: ${spring.application.name}
     prefer-ip-address: true   #访问路径显示为IP

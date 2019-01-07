@@ -1,0 +1,19 @@
+zzyfilepath: C:/zzyfile/ 
+
+server:
+  port: 8022
+spring:
+  application:
+    name: zzyfile
+  resources:
+    static-locations:
+    - file:${zzyfilepath}
+  mvc:
+    static-path-pattern: /**
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:7001/eureka/
+  instance:
+    instance-id: ${spring.application.name}
+    prefer-ip-address: true   #访问路径显示为IP
