@@ -17,31 +17,10 @@
   		<version>${project.version}</version>
   	</dependency>
   	<dependency>
-  		<groupId>org.springframework.cloud</groupId>
-  		<artifactId>
-  			spring-cloud-starter-netflix-eureka-client
-  		</artifactId>
-  	</dependency>
-
-
-  	<dependency>
-  		<groupId>org.springframework.cloud</groupId>
-  		<artifactId>spring-cloud-starter-openfeign</artifactId>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.springframework.boot</groupId>
-  		<artifactId>spring-boot-devtools</artifactId>
-  		<scope>runtime</scope>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.springframework.boot</groupId>
-  		<artifactId>spring-boot-starter-web</artifactId>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.projectlombok</groupId>
-  		<artifactId>lombok</artifactId>
-  		<scope>compileOnly</scope>
-  	</dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.6.0</version>
+		</dependency>
   </dependencies>
   <dependencyManagement>
   	<dependencies>
@@ -52,6 +31,7 @@
   			<type>pom</type>
   			<scope>import</scope>
   		</dependency>
+  		
   	</dependencies>
   </dependencyManagement>
   

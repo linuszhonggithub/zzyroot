@@ -1,10 +1,10 @@
 server:
-  port: 8001
+  port: 5000
 spring:
   application:
     name: zzyusercenter
   datasource:
-    url: jdbc:mysql://localhost:3306/usercenter
+    url: jdbc:mysql://zzymysql.cwromzxlmahw.us-east-1.rds.amazonaws.com/usercenter 
     username: root
     password: Ns5R3IbQMdJopyQdM5kM5g==
     driver-class-name: com.mysql.jdbc.Driver
@@ -14,7 +14,7 @@ spring:
     hibernate:
       ddl-auto: update
   redis:
-    host: localhost
+    host: zzyredis1.zb918y.ng.0001.use1.cache.amazonaws.com
     database: 0
     port: 6379
     jedis:
@@ -26,12 +26,6 @@ spring:
 feign:
   hystrix:
     enabled: true  
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:7001/eureka/
-  instance:
-    instance-id: ${spring.application.name}
-    prefer-ip-address: true   #访问路径显示为IP
+
 super: Ns5R3IbQMdLLCeMRmd5OskUSp+GNeCa864oP6p0fSVfLj4hdhmtluD0NQI/X1DgPD8jR1vMGt/jgUTj2EzWHH9Kx9Pww+XN3w/pt4oS8oDc=
 superu: http://192.168.0.121:8085/super.html
